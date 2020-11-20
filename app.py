@@ -7,6 +7,8 @@ from helper.sanitize_url import sanitize_url
 from helper.to_dict import to_dict
 from jinja2 import Environment, FileSystemLoader
 
+from sitemap import generate_sitemap
+
 for domain in get_domain():
 
     all = load_all_groups()
@@ -33,8 +35,10 @@ for domain in get_domain():
             )
         )
 
+    """
+    Create pages for the individual categories
+    """
     template = template_env.get_template('category.html')
-
     for each in all:
         root = sanitize_url(each['category'])
 
@@ -57,6 +61,10 @@ for domain in get_domain():
                 )
             )
 
+
+    """
+    Create pages for the corresponding Subcategories
+    """
     template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
     template = template_env.get_template('subcategory.html')
 
@@ -88,6 +96,9 @@ for domain in get_domain():
                     )
                 )
 
+            """
+            Create the details page for the keywords
+            """
             template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
             kw_template = template_env.get_template('details.html')
             for kw in kw_data['keywords']:
@@ -139,3 +150,6 @@ for domain in get_domain():
                 domain=domain
             )
         )
+
+    # Generate Sitemap
+    generate_sitemap(f'http://{domain}', all)
