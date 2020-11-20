@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- saved from url=(0021)https://1acounter.de/ -->
+<html lang="en" class="wf-materialicons-n4-active wf-active translated-ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{{ domain }}</title>
+    
+    <link rel="profile" href="https://gmpg.org/xfn/11">
+    <link rel="pingback" href="https://1acounter.de/xmlrpc.php">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow, noarchive">
+    <meta name="og:locale" content="de_DE">
+    <meta name="og:type" content="website">
+    <meta name="og:title" content="1acounter.de">
+    <meta name="og:site_name" content="1acounter.de">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="1acounter.de">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com/">
+    <link rel="dns-prefetch" href="https://s.w.org/">
+    <link rel="https://api.w.org/" href="https://1acounter.de/wp-json/">
+    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://1acounter.de/xmlrpc.php?rsd">
+    <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://1acounter.de/wp-includes/wlwmanifest.xml">
+    <meta name="generator" content="WordPress 5.3.2">
+    <link rel="shortlink" href="https://1acounter.de/">
+    <link rel="canonical" href="https://1acounter.de/">
+    <link rel="stylesheet" type="text/css" href="./assets/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./assets/style.dev.css">
+    <link href="./assets/css" media="all">
+  <link type="text/css" rel="stylesheet" charset="UTF-8" href="./assets/translateelement.css"></head>
+
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4"><a class="navbar-brand" href="/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ domain }}</font></font></a></nav>
+    <main role="main" class="container" style="min-height: 1000px;">
+      <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ domain }}</font></font></h1>
+      <div class="category-grid">
+        {% for each in all_data %}
+          {% set root = sanitize_url(each.category) %}
+        <div class="card"><a href="{{ root_page }}/{{ root }}">
+            <img class="card-img-top" src="{{ each.image | random() }}"></a>
+          <div class="card-body">
+            <h2 class="card-title"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ each.category.title() }}</font></font></h2>
+            <ul>
+              {% for result in each['subcategory'][0:10] %}
+                {% set child = sanitize_url(result) %}
+              <li><a class="deep-link" href="{{ root_page }}/{{ root }}/{{ child }}/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ result }}&gt;</font></font></a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="card-footer text-right"><a class="btn btn-primary" href="https://1acounter.de/drogerie-und-koerperpflege/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ each['category'] }}&gt;</font></font></a></div>
+        </div>
+        {% endfor %}
+      </div>
+    </main>
+    <footer class="container">
+      <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">© {{ domain }} 2017 - 2020 · </font></font><a href="/impressum/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Imprint</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> · </font><a href="/datenschutz/"><font style="vertical-align: inherit;">Privacy</font></a><font style="vertical-align: inherit;"> Policy</font></font><a href="https://1acounter.de/datenschutz/"><font style="vertical-align: inherit;"></font></a></p>
+    </footer>
+    <script type="text/javascript" src="./assets/jquery-3.4.1.slim.min.js"></script>
+    <script type="text/javascript" src="./assets/popper.min.js"></script>
+    <script type="text/javascript" src="./assets/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/jquery.js"></script><div id="goog-gt-tt" class="skiptranslate" dir="ltr"><div style="padding: 8px;"><div><div class="logo"><img src="./assets/translate_24dp.png" width="20" height="20" alt="Google Translate"></div></div></div><div class="top" style="padding: 8px; float: left; width: 100%;"><h1 class="title gray">Original text</h1></div><div class="middle" style="padding: 8px;"><div class="original-text"></div></div><div class="bottom" style="padding: 8px;"><div class="activity-links"><span class="activity-link">Contribute a better translation</span><span class="activity-link"></span></div><div class="started-activity-container"><hr style="color: #CCC; background-color: #CCC; height: 1px; border: none;"><div class="activity-root"></div></div></div><div class="status-message" style="display: none;"></div></div>
+  
+
+<div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>
