@@ -11,7 +11,7 @@ from sitemap import generate_sitemap
 
 for domain in get_domain():
 
-    all = load_all_groups()
+    all_data = load_all_groups()
 
     template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
     template = template_env.get_template('index.html')
@@ -28,7 +28,7 @@ for domain in get_domain():
     with open(f'layout/{domain}/index.html', 'w') as output_file:
         output_file.write(
             template.render(
-                all_data=all,
+                all_data=all_data,
                 sanitize_url=sanitize_url,
                 domain=domain,
                 root_page=root_page
@@ -39,10 +39,10 @@ for domain in get_domain():
     Create pages for the individual categories
     """
     template = template_env.get_template('category.html')
-    for each in all:
-        root = sanitize_url(each['category'])
+    for each in all_data:
+        category = sanitize_url(each['category'])
 
-        path = f'layout/{domain}/{root}'
+        path = f'layout/{domain}/{category}'
         if not os.path.isdir(path):
             os.mkdir(path)
 
@@ -68,12 +68,12 @@ for domain in get_domain():
     template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
     template = template_env.get_template('subcategory.html')
 
-    for each in all:
+    for each in all_data:
         root = sanitize_url(each['category'])
 
         path = f'layout/{domain}/{root}'
 
-        for sub in each['subcategory'][0:10]:
+        for sub in each['subcategory']:
             sub_url = sanitize_url(sub)
             subpath = f'{path}/{sub_url}'
             if not os.path.isdir(subpath):
@@ -113,7 +113,7 @@ for domain in get_domain():
                         kw_template.render(
                             category=each['category'],
                             subcateg=sub,
-                            allsub=each['subcategory'][0:10],
+                            allsub=each['subcategory'],
                             kw_details=[x for x in get_kw_data(kw)],
                             sanitize_url=sanitize_url,
                             domain=domain,
@@ -152,4 +152,4 @@ for domain in get_domain():
         )
 
     # Generate Sitemap
-    generate_sitemap(f'http://{domain}', all)
+    generate_sitemap(f'http://{domain}', all_data)

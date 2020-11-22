@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)https://1acounter.de/elektronik-und-foto/ -->
 <html lang="en" class="wf-materialicons-n4-active wf-active translated-ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>September 2020 {{ category }} winners</title>
     
@@ -23,8 +22,8 @@
     <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://1acounter.de/xmlrpc.php?rsd">
     <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://1acounter.de/wp-includes/wlwmanifest.xml">
     <meta name="generator" content="WordPress 5.3.2">
-    <link rel="shortlink" href="https://1acounter.de/elektronik-und-foto/">
-    <link rel="canonical" href="https://1acounter.de/elektronik-und-foto/">
+    <link rel="shortlink" href="/{{ sanitize_url(category) }}">
+    <link rel="canonical" href="/{{ sanitize_url(category) }}">
     <link rel="stylesheet" type="text/css" href="./assets/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./assets/style.dev.css">
     <link href="./assets/css" media="all">
@@ -46,7 +45,7 @@
       <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">September 2020 {{ category }} current winners</font></font></h1>
       <div class="sub-title"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> {{ category }} shows all relevant comparisons September 2020 from the specialist department with ease</font></font></div>
       <div class="category-grid">
-        {% for each in subcategory[0:10] %}
+        {% for each in subcategory %}
           <div class="card"><a href="/{{ sanitize_url(category) }}/{{ sanitize_url(each) }}">
             <img class="card-img-top" src="{{ get_kw(each)['images'] | random() }}"></a>
             <div class="card-body">

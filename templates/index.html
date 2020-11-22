@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0021)https://1acounter.de/ -->
-<html lang="en" class="wf-materialicons-n4-active wf-active translated-ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en" class="wf-materialicons-n4-active wf-active translated-ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{{ domain }}</title>
     
     <link rel="profile" href="https://gmpg.org/xfn/11">
@@ -22,8 +23,8 @@
     <link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://1acounter.de/xmlrpc.php?rsd">
     <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://1acounter.de/wp-includes/wlwmanifest.xml">
     <meta name="generator" content="WordPress 5.3.2">
-    <link rel="shortlink" href="https://1acounter.de/">
-    <link rel="canonical" href="https://1acounter.de/">
+    <link rel="shortlink" href="/">
+    <link rel="canonical" href="/">
     <link rel="stylesheet" type="text/css" href="./assets/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./assets/style.dev.css">
     <link href="./assets/css" media="all">
@@ -41,7 +42,7 @@
           <div class="card-body">
             <h2 class="card-title"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ each.category.title() }}</font></font></h2>
             <ul>
-              {% for result in each['subcategory'][0:10] %}
+              {% for result in each['subcategory'] %}
                 {% set child = sanitize_url(result) %}
               <li><a class="deep-link" href="{{ root_page }}/{{ root }}/{{ child }}/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{ result }}&gt;</font></font></a></li>
               {% endfor %}

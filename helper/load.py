@@ -3,39 +3,54 @@ import random
 
 
 def load_all_groups():
-    all = []
+    """
+    Groups the entire ebay csv file in the /database folder and returns a
+    list of all the original data grouped into categories
+    :return: List
+    eg: [
+        {'category': 'Büro & Schreibwaren',
+        'subcategory': ['Möbel', 'Koffer, Taschen & Accessoires', ...],
+        'image': ['https://i.ebayimg.com/images/g/8HsAAOSwmQxfgGeV/s-l300.jpg']
+        },
+        ...
+    ]
+    """
+    grouped_data = []
     with open('./database/data.csv') as file:
         reader = csv.DictReader(file)
         for line in reader:
             data = {}
-
-            item = line['keyword']
             image = line['image']
 
-            category = line['category'].split('|')
-            categ = category[0]
-            if categ not in [each['category'] for each in all if all]:
-                data['category'] = categ
+            subcategory = line['subcategory'].split('|')
+            category = line['category']
+            if category not in [each['category'] for each in grouped_data if grouped_data]:
+                data['category'] = category
                 data['subcategory'] = []
-                data['items'] = []
                 data['image'] = []
 
-                all.append(data)
+                grouped_data.append(data)
 
             # Update the list of dictionaries while still in motion using generators
             # Return dict that has key == current iteration category value
-            allcat = next(item for item in all if item['category'] == categ)
+            allcat = next(item for item in grouped_data if item['category'] == category)
 
             # Update when we get a match
-            if allcat and item not in allcat['items']:  # only add that keyword once
-                if (category[-2] not in allcat['subcategory']) and (category[-2] != categ):
-                     allcat['subcategory'].append(category[-2])
+            if allcat:
+                subcat = subcategory[-2] if len(subcategory) > 1 else subcategory[0]
+
+                # Check if subcategory not in list already and if it does not have same
+                # name as the 'category'
+                if (subcat not in allcat['subcategory']) and (subcat != category) and (subcat != 'Sonstige'):
+                    allcat['subcategory'].append(subcat)
                 allcat['image'].append(image)
 
-                allcat['items'].append(item)
+            if len(allcat['subcategory']) > 10:
+                allcat['subcategory'] = random.sample(allcat['subcategory'], 10)
+            allcat['image'] = [random.choice(allcat['image'])]
 
     # return all
-    return random.sample(list(filter(lambda x: len(x['subcategory']) > 4, all)), 10)
+    return random.sample(list(filter(lambda x: len(x['subcategory']) > 4, grouped_data)), 10)
 
 
 def get_all_sub_kw(subcategory):
@@ -55,7 +70,9 @@ def get_all_sub_kw(subcategory):
         reader = csv.DictReader(file)
 
         for line in reader:
-            if subcategory in line['category'].split('|')[-2]:
+            subcategory_ = line['subcategory'].split('|')
+            subcat = subcategory_[-2] if len(subcategory_) > 1 else subcategory_[0]
+            if subcategory in subcat:
                 keyword = line['keyword']
                 image = line['image']
 
