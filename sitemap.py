@@ -3,7 +3,7 @@ from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 
-from helper.load import load_all_groups, get_all_sub_kw
+from helper.load import get_all_sub_kw
 from helper.sanitize_url import sanitize_url
 
 
@@ -15,14 +15,15 @@ def generate_sitemap(domain: str, data: List):
     lastmod_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
     # Fill the Sitemap Template and Write File
-    each_map = []
+    i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': domain}
+    each_map = [i]
     for each in data:  # For each URL in the list of URLs ...
         i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
         link = f"{domain}/{sanitize_url(each['category'])}"
         i['loc'] = link
         each_map.append(i)
 
-        for lnk in each['subcategory'][0:10]:
+        for lnk in each['subcategory']:
             i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
             sub_link = f'{link}/{sanitize_url(lnk)}'
             i['loc'] = sub_link
@@ -35,7 +36,8 @@ def generate_sitemap(domain: str, data: List):
                 i['loc'] = kw_lnk
                 each_map.append(i)
 
-    with open(f'layout/{domain[6:]}/sitemap.xml', 'w') as sm:
+    hostname = domain.split("://")[1].split("/")[0]
+    with open(f'layout/{hostname}/sitemap.xml', 'w') as sm:
         sm.write(template.render(
             each_map=each_map
         ))

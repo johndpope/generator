@@ -47,7 +47,7 @@ def load_all_groups():
 
             if len(allcat['subcategory']) > 10:
                 allcat['subcategory'] = random.sample(allcat['subcategory'], 10)
-            allcat['image'] = [random.choice(allcat['image'])]
+            # allcat['image'] = [random.choice(allcat['image'])]
 
     # return all
     return random.sample(list(filter(lambda x: len(x['subcategory']) > 4, grouped_data)), 10)
