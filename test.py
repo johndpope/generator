@@ -3,3 +3,8 @@ from sitemap import generate_sitemap
 
 print(generate_sitemap('https://ddddd.de', load_all_groups()))
 # print(get_all_sub_kw('Grills'))
+
+
+"""
+NOTHING MEANINGFUL HERE BRO
+"""
