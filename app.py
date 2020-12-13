@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from sitemap import generate_sitemap
 
 for domain in get_domain():
+    print(f'Currently generating site for {domain}')
 
     all_data = load_all_groups()
 
@@ -18,8 +19,10 @@ for domain in get_domain():
 
     root_page = ''
     # root_page = f'/generator/example/layout/{domain}'
+
     root_path = f'layout/{domain}'
     if not os.path.isdir(root_path):
+        os.mkdir('layout') if not os.path.isdir('layout') else None
         os.mkdir(root_path)
 
     # Copy assets directory to root of domain
@@ -153,3 +156,5 @@ for domain in get_domain():
 
     # Generate Sitemap
     generate_sitemap(f'http://{domain}', all_data)
+
+    print(f'Done generating site for {domain}')
