@@ -2,6 +2,12 @@ import csv
 import random
 
 
+def get_group_by_category(groups, category):
+    for group in groups:
+        if group.get("category") == category:
+            return group
+
+
 def load_all_groups():
     """
     Groups the entire ebay csv file in the /database folder and returns a
@@ -33,11 +39,13 @@ def load_all_groups():
 
             # Update the list of dictionaries while still in motion using generators
             # Return dict that has key == current iteration category value
-            allcat = next(item for item in grouped_data if item['category'] == category)
+            allcat = next(
+                item for item in grouped_data if item['category'] == category)
 
             # Update when we get a match
             if allcat:
-                subcat = subcategory[-2] if len(subcategory) > 1 else subcategory[0]
+                subcat = subcategory[-2] if len(
+                    subcategory) > 1 else subcategory[0]
 
                 # Check if subcategory not in list already and if it does not have same
                 # name as the 'category'
@@ -46,7 +54,8 @@ def load_all_groups():
                 allcat['image'].append(image)
 
             if len(allcat['subcategory']) > 10:
-                allcat['subcategory'] = random.sample(allcat['subcategory'], 10)
+                allcat['subcategory'] = random.sample(
+                    allcat['subcategory'], 10)
             # allcat['image'] = [random.choice(allcat['image'])]
 
     # return all
@@ -71,7 +80,8 @@ def get_all_sub_kw(subcategory):
 
         for line in reader:
             subcategory_ = line['subcategory'].split('|')
-            subcat = subcategory_[-2] if len(subcategory_) > 1 else subcategory_[0]
+            subcat = subcategory_[-2] if len(
+                subcategory_) > 1 else subcategory_[0]
             if subcategory in subcat:
                 keyword = line['keyword']
                 image = line['image']
