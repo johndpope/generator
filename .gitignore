@@ -1,3 +1,4 @@
 layout/*
 .idea/*
 __pycache__/*
+config.py
