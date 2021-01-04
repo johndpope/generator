@@ -43,6 +43,44 @@ class DBConnection:
             {})
 
     """
+    Get specific subcategory
+    """
+
+    """
+    Get specific category
+    """
+
+    """
+    Get specific 
+    """
+
+    """
+    Get all categories and subcategories 
+    """
+    def get_categories_and_subcategories(self):
+        all_categories = self.get_all_data()
+        tree = {}
+        for item in all_categories:
+            # print(item.get("category"))
+            category = item["category"]
+            subcategory = item["mainsubcategory"]
+            keyword = item["keyword"]
+            item = item["name"]
+
+            clean_category = item["sanitized_category"]
+            clean_subcategory = item["sanitized_mainsubcategory"]
+
+            if tree.get(clean_category) == None:
+                tree[clean_category] = {
+                    "subcategories": {},
+                    "name": category,
+                }
+            if tree.get(clean_category).get("subcategories").get(clean_subcategory) == None:
+                tree[clean_category]["subcategories"][clean_subcategory] = {
+                    "name": subcategory
+                }
+
+    """
     Creates a tree for the sitemap
     """
 
@@ -62,7 +100,6 @@ class DBConnection:
                 clean_category = clean_url(category)
                 clean_subcategory = clean_url(subcategory)
                 clean_keyword = clean_url(keyword)
-                print("cat ", clean_category)
 
                 if tree.get(clean_category) == None:
                     tree[clean_category] = {
@@ -115,8 +152,4 @@ connection = DBConnection()
 # for item in item_by_id:
 #     pprint.pprint(item)
 
-
-# connection.update_all_categories()
-fileStream = open("test.txt", "w+")
-
-pprint.pprint(connection.get_tree(), fileStream)
+# connection.get_categories_and_subcategories()
