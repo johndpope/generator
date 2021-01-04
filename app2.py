@@ -1,7 +1,9 @@
 from helper.load import load_all_groups, get_all_sub_kw, get_kw_data, get_group_by_category
 from flask import Flask, render_template, request, send_from_directory
 import pprint
+from datetime import datetime
 from helper.to_dict import to_dict
+from SitemapGen import generate_urls
 
 
 app = Flask(__name__)
@@ -21,6 +23,15 @@ def template_page(category, subcategory, keyword):
                            subcategory=subcategory,
                            keyword=keyword,
                            products=products
+                           )
+
+
+@app.route("/sitemap.xml")
+def template_sitemap():
+    now = datetime.now()
+    return render_template('sitemap.html',
+                           urls=generate_urls(),
+                           datetime=now.strftime("%Y-%m-%dT%H:%M:%S")+"+00:00"
                            )
 
 

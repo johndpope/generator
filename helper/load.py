@@ -1,5 +1,6 @@
 import csv
 import random
+from helper.sanitize_url import clean_url
 
 
 def get_group_by_category(groups, category):
@@ -103,3 +104,65 @@ def get_kw_data(kw):
         reader = csv.DictReader(file)
         data = [line for line in reader if kw == line['keyword']]
         return data
+
+
+def load_all_data_from_csv():
+    """
+    Loads every single entry from csv and adds sanitized urls
+    :return: List
+    [
+        {'keyword',
+        'name',
+        'category',
+        'subcategory',
+        'sanitized_keyword',
+        'sanitized_name',¸
+        'sanitized_category',
+        'sanitized_subcategory',
+        'image',
+        'price',
+        'item_no',
+        'location',
+        'description',
+        'description_link',
+        'url'
+
+
+    ]
+    """
+    all_data = []
+    with open('./database/data.csv') as file:
+        reader = csv.DictReader(file)
+        for line in reader:
+            data = {}
+
+            data["keyword"] = line['keyword']
+            data["name"] = line['name']
+            data["category"] = line['category']
+            data["subcategory"] = line['subcategory']
+            data["image"] = line['image']
+            data["price"] = line['price']
+            data["item_no"] = line['item_no']
+            data["location"] = line.get('loaction')
+            data["description"] = line['description']
+            data["description_link"] = line['description_link']
+            data["url"] = line['url']
+            data["listsubcategory"] = line['subcategory'].split('|')
+            data["category"] = line['category']
+            data["mainsubcategory"] = data["listsubcategory"][0]
+
+            data["sanitized_keyword"] = clean_url(data["keyword"])
+            data["sanitized_name"] = clean_url(data["name"])
+            data["sanitized_category"] = clean_url(data["category"])
+            data["sanitized_mainsubcategory"] = clean_url(
+                data["mainsubcategory"])
+
+            # data["sanitized_subcategory"] = list(
+            #     map(clean_url, data["subcategory"]))
+
+            all_data.append(
+                data
+            )
+
+    # return all
+    return all_data
