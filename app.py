@@ -17,7 +17,6 @@ pp = pprint.PrettyPrinter(indent=4)
 @app.route("/")
 def template_test():
     return render_template('index_template.html',
-                           my_string="Wheeeee!",
                            clean_url=clean_url,
                            groups=all_groups)
 
@@ -54,7 +53,7 @@ def template_sitemap():
     # pp.pprint(generate_urls())
     template = render_template(
         'sitemap.xml',
-        all_urls=generate_sitemap(request.host_url, all_groups)
+        all_urls=generate_sitemap(request.url_root[:-1], all_groups)
     )
     response = make_response(template)
     response.headers['Content-Type'] = 'application/xml'
