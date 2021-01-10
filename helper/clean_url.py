@@ -5,10 +5,6 @@ def sanitize_url(str):
     return str.lower().replace('/', '').replace(', ', '-').replace('&', 'und').replace(' ', '-').replace('---', '-').replace('.', '')
 
 
-def undo_sanitize(str: str):
-    return str.title().replace('-', ' ').replace('und', '&')
-
-
 def clean_url(str):
     return sanitize_url(deEmojify(str))
 
@@ -21,3 +17,4 @@ def deEmojify(text):
                                 u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                 "]+", flags=re.UNICODE)
     return regrex_pattern.sub(r'', text)
+

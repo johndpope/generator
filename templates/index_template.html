@@ -6,7 +6,7 @@
 -->
 <html>
   <head>
-    <title>Hielo by TEMPLATED</title>
+    <title>{{ my_string }}</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/css/main.css" />
@@ -24,7 +24,7 @@
     <nav id="menu">
       <ul class="links">
         {% for group in groups %}
-        <li><a href="{{ownurl}}/{{group.category}}">{{group.category}}</a></li>
+        <li><a href="/{{ clean_url(group.category) }}">{{group.category}}</a></li>
         {% endfor %}
       </ul>
     </nav>
@@ -88,7 +88,7 @@
           <div>
             <div class="box">
               <div class="image fit">
-                <img src="{{group.image[0]}}" alt="" />
+                <img src="{{group.image | random() }}" alt="" />
               </div>
               <div class="content">
                 <header class="align-center">
@@ -99,12 +99,12 @@
                   Unsere Angebot in {{group.category}}:
                   <ul>
                   {% for subcategory in group.subcategory %}
-                    <li><a href="{{ownurl}}/{{group.category}}/{{subcategory}}">{{subcategory}}</a></li>
+                    <li><a href="/{{ clean_url(group.category) }}/{{ clean_url(subcategory) }}">{{subcategory}}</a></li>
                     {% endfor %}
                   </ul>
                 </p>
                 <footer class="align-center">
-                  <a href="{{ownurl}}/{{group.category}}" class="button alt">Learn More</a>
+                  <a href="/{{ clean_url(group.category) }}" class="button alt">Learn More</a>
                 </footer>
               </div>
             </div>
@@ -114,53 +114,53 @@
       </div>
     </section>
 
-    <!-- Two -->
-    <section id="two" class="wrapper style3">
-      <div class="inner">
-        <header class="align-center">
-          <p>
-            Nam vel ante sit amet libero scelerisque facilisis eleifend vitae
-            urna
-          </p>
-          <h2>Morbi maximus justo</h2>
-        </header>
-      </div>
-    </section>
+<!--    &lt;!&ndash; Two &ndash;&gt;-->
+<!--    <section id="two" class="wrapper style3">-->
+<!--      <div class="inner">-->
+<!--        <header class="align-center">-->
+<!--          <p>-->
+<!--            Nam vel ante sit amet libero scelerisque facilisis eleifend vitae-->
+<!--            urna-->
+<!--          </p>-->
+<!--          <h2>Morbi maximus justo</h2>-->
+<!--        </header>-->
+<!--      </div>-->
+<!--    </section>-->
 
-    <!-- Three -->
-    <section id="three" class="wrapper style2">
-      <div class="inner">
-        <header class="align-center">
-          <p class="special">
-            Nam vel ante sit amet libero scelerisque facilisis eleifend vitae
-            urna
-          </p>
-          <h2>Morbi maximus justo</h2>
-        </header>
-        <div class="gallery">
-          <div>
-            <div class="image fit">
-              <a href="#"><img src="images/pic01.jpg" alt="" /></a>
-            </div>
-          </div>
-          <div>
-            <div class="image fit">
-              <a href="#"><img src="images/pic02.jpg" alt="" /></a>
-            </div>
-          </div>
-          <div>
-            <div class="image fit">
-              <a href="#"><img src="images/pic03.jpg" alt="" /></a>
-            </div>
-          </div>
-          <div>
-            <div class="image fit">
-              <a href="#"><img src="images/pic04.jpg" alt="" /></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!--    &lt;!&ndash; Three &ndash;&gt;-->
+<!--    <section id="three" class="wrapper style2">-->
+<!--      <div class="inner">-->
+<!--        <header class="align-center">-->
+<!--          <p class="special">-->
+<!--            Nam vel ante sit amet libero scelerisque facilisis eleifend vitae-->
+<!--            urna-->
+<!--          </p>-->
+<!--          <h2>Morbi maximus justo</h2>-->
+<!--        </header>-->
+<!--        <div class="gallery">-->
+<!--          <div>-->
+<!--            <div class="image fit">-->
+<!--              <a href="#"><img src="images/pic01.jpg" alt="" /></a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div>-->
+<!--            <div class="image fit">-->
+<!--              <a href="#"><img src="images/pic02.jpg" alt="" /></a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div>-->
+<!--            <div class="image fit">-->
+<!--              <a href="#"><img src="images/pic03.jpg" alt="" /></a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div>-->
+<!--            <div class="image fit">-->
+<!--              <a href="#"><img src="images/pic04.jpg" alt="" /></a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </section>-->
 
     <!-- Footer -->
     <footer id="footer">

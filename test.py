@@ -1,10 +1,12 @@
-from helper.load import load_all_groups, get_all_sub_kw, get_kw_data
-from sitemap import generate_sitemap
-
-print(generate_sitemap('https://ddddd.de', load_all_groups()))
-# print(get_all_sub_kw('Grills'))
+from controller import MongoDriver
+from temp.sitemap import generate_urls
 
 
-"""
-NOTHING MEANINGFUL HERE BRO
-"""
+conn = MongoDriver.DBConnection()
+# print(conn.get_all_groups())
+# cat = conn.get_category_by_url('reisen')
+# print(cat)
+# print(conn.get_group_by_category(cat))
+
+
+print(generate_urls(conn.get_all_data()))

@@ -1,160 +1,80 @@
-import os
-import shutil
+import pprint
 
-from helper.domain import get_domain
-from helper.load import load_all_groups, get_all_sub_kw, get_kw_data
-from helper.sanitize_url import sanitize_url
-from helper.to_dict import to_dict
-from jinja2 import Environment, FileSystemLoader
+from flask import Flask, render_template, send_from_directory, make_response, request
 
+from controller import MongoDriver
+from helper.clean_url import clean_url
 from sitemap import generate_sitemap
 
-for domain in get_domain():
-    print(f'Currently generating site for {domain}')
+app = Flask(__name__)
+driver = MongoDriver.DBConnection()
 
-    all_data = load_all_groups()
+all_groups = driver.get_all_groups()
 
-    template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
-    template = template_env.get_template('index.html')
-
-    root_page = ''
-    # root_page = f'/generator/example/layout/{domain}'
-
-    root_path = f'layout/{domain}'
-    if not os.path.isdir(root_path):
-        os.mkdir('layout') if not os.path.isdir('layout') else None
-        os.mkdir(root_path)
-
-    # Copy assets directory to root of domain
-    shutil.copytree('./templates/assets', f'{root_path}/assets')
-
-    with open(f'layout/{domain}/index.html', 'w') as output_file:
-        output_file.write(
-            template.render(
-                all_data=all_data,
-                sanitize_url=sanitize_url,
-                domain=domain,
-                root_page=root_page
-            )
-        )
-
-    """
-    Create pages for the individual categories
-    """
-    template = template_env.get_template('category.html')
-    for each in all_data:
-        category = sanitize_url(each['category'])
-
-        path = f'layout/{domain}/{category}'
-        if not os.path.isdir(path):
-            os.mkdir(path)
-
-        # Copy assets directory to category page
-        shutil.copytree('templates/subassets', f'{path}/assets')
-
-        with open(f'{path}/index.html', 'w') as output_file:
-            output_file.write(
-                template.render(
-                    category=each['category'],
-                    subcategory=each['subcategory'],
-                    get_kw=get_all_sub_kw,
-                    sanitize_url=sanitize_url,
-                    domain=domain,
-                    root_page=root_page
-                )
-            )
+pp = pprint.PrettyPrinter(indent=4)
 
 
-    """
-    Create pages for the corresponding Subcategories
-    """
-    template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
-    template = template_env.get_template('subcategory.html')
+@app.route("/")
+def template_test():
+    return render_template('index_template.html',
+                           my_string="Wheeeee!",
+                           clean_url=clean_url,
+                           groups=all_groups)
 
-    for each in all_data:
-        root = sanitize_url(each['category'])
 
-        path = f'layout/{domain}/{root}'
+@app.route("/<category>")
+def template_category(category):
+    category = driver.get_category_by_url(category)
+    group = driver.get_group_by_category(all_groups, category)
+    return render_template('category_template.html',
+                           clean_url=clean_url,
+                           category=category,
+                           group=group,
+                           get_all_kw_of=driver.get_all_kw_of_subcategory
+                           )
 
-        for sub in each['subcategory']:
-            sub_url = sanitize_url(sub)
-            subpath = f'{path}/{sub_url}'
-            if not os.path.isdir(subpath):
-                os.mkdir(subpath)
 
-            # Copy assets directory to category page
-            shutil.copytree('templates/subsubassets', f'{subpath}/assets')
+@app.route("/<category>/<subcategory>/<keyword>/")
+def template_page(category, subcategory, keyword):
+    subcategory = driver.get_subcategory_by_url(subcategory)
+    keyword = driver.get_keyword_by_url(keyword)
+    products = driver.get_all_data_that_contains(keyword)
+    # pp.pprint(products)
+    return render_template(
+        'page_template.html',
+        category=category,
+        subcategory=subcategory,
+        keyword=keyword,
+        products=products
+    )
 
-            kw_data = get_all_sub_kw(sub)
-            with open(f'{subpath}/index.html', 'w') as output_file:
-                output_file.write(
-                    template.render(
-                        category=each['category'],
-                        subcateg=sub,
-                        kw_data=kw_data,
-                        length=len(kw_data['keywords']),
-                        sanitize_url=sanitize_url,
-                        domain=domain,
-                        root_page=root_page
-                    )
-                )
 
-            """
-            Create the details page for the keywords
-            """
-            template_env = Environment(loader=FileSystemLoader(searchpath='./templates'))
-            kw_template = template_env.get_template('details.html')
-            for kw in kw_data['keywords']:
-                kw_path = f'{subpath}/{sanitize_url(kw)}'
-                if not os.path.isdir(kw_path):
-                    os.mkdir(kw_path)
+@app.route("/sitemap.xml")
+def template_sitemap():
+    # pp.pprint(generate_urls())
+    template = render_template(
+        'sitemap.xml',
+        all_urls=generate_sitemap(request.host_url, all_groups)
+    )
+    response = make_response(template)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
 
-                shutil.copytree('./templates/details', f'{kw_path}/assets')
 
-                with open(f'{kw_path}/index.html', 'w') as output_file:
-                    output_file.write(
-                        kw_template.render(
-                            category=each['category'],
-                            subcateg=sub,
-                            allsub=each['subcategory'],
-                            kw_details=[x for x in get_kw_data(kw)],
-                            sanitize_url=sanitize_url,
-                            domain=domain,
-                            keyword=kw,
-                            to_dict=to_dict,
-                            root_page=root_page
-                        )
-                    )
+@app.route("/generic")
+def template_generic():
+    return render_template('generic.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])
 
-    # Impressum
-    impressum_path = f'{root_path}/impressum'
-    if not os.path.isdir(impressum_path):
-        os.mkdir(impressum_path)
-    shutil.copytree('./templates/impressum', f'{impressum_path}/impressum_files')
 
-    impressum_tmp = template_env.get_template('impressum.html')
-    with open(f'layout/{domain}/impressum/index.html', 'w') as output_file:
-        output_file.write(
-            impressum_tmp.render(
-                domain=domain
-            )
-        )
+@app.route('/assets/<path:path>')
+def static_files(path):
+    return send_from_directory('templates/assets', path)
 
-    # Datenschutz
-    datenschutz_path = f'{root_path}/datenschutz'
-    if not os.path.isdir(datenschutz_path):
-        os.mkdir(datenschutz_path)
-    shutil.copytree('./templates/datenschutz', f'{datenschutz_path}/datenschutz_files')
 
-    datenschutz_tmp = template_env.get_template('datenschutz.html')
-    with open(f'layout/{domain}/datenschutz/index.html', 'w') as output_file:
-        output_file.write(
-            datenschutz_tmp.render(
-                domain=domain
-            )
-        )
+@app.route('/images/<path:path>')
+def static_files_img(path):
+    return send_from_directory('templates/images', path)
 
-    # Generate Sitemap
-    generate_sitemap(f'http://{domain}', all_data)
 
-    print(f'Done generating site for {domain}')
+if __name__ == '__main__':
+    app.run(debug=True)
