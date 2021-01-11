@@ -109,7 +109,7 @@ class DBConnection:
         :param subcategory:
         :return:
         """
-        data = {'subcategory': subcategory, 'keywords': [], 'images': []}
+        data = {'subcategory': subcategory, 'keyword': [], 'images': []}
 
         all_data = self.get_all_data()
 
@@ -119,11 +119,11 @@ class DBConnection:
                 keyword = line['keyword']
                 image = line['image']
 
-                if keyword not in data['keywords']:
-                    data['keywords'].append(keyword)
+                if keyword not in data['keyword']:
+                    data['keyword'].append(keyword)
                     data['images'].append(image)
 
-        return data if data['keywords'] else None
+        return data if data['keyword'] else None
 
     def get_all_data_that_contains(self, keyword):
         """

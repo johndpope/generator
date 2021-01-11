@@ -33,18 +33,40 @@ def template_category(category):
                            )
 
 
+@app.route("/<category>/<subcategory>")
+def template_sub(category, subcategory):
+    category = driver.get_category_by_url(category)
+    group = driver.get_group_by_category(all_groups, category)
+    subcategory = driver.get_subcategory_by_url(subcategory)
+    sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
+
+    pp.pprint(sub_kw_data)
+    return render_template(
+        'subcategory_template.html',
+        category=category,
+        subcategory=subcategory,
+        sub_kw_data=sub_kw_data,
+        clean_url=clean_url,
+        group=group
+    )
+
+
 @app.route("/<category>/<subcategory>/<keyword>/")
 def template_page(category, subcategory, keyword):
+    category = driver.get_category_by_url(category)
     subcategory = driver.get_subcategory_by_url(subcategory)
     keyword = driver.get_keyword_by_url(keyword)
     products = driver.get_all_data_that_contains(keyword)
+    sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
     # pp.pprint(products)
     return render_template(
         'page_template.html',
         category=category,
         subcategory=subcategory,
         keyword=keyword,
-        products=products
+        products=products,
+        sub_kw_data=sub_kw_data,
+        clean_url=clean_url
     )
 
 
@@ -65,15 +87,5 @@ def template_generic():
     return render_template('generic.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])
 
 
-@app.route('/assets/<path:path>')
-def static_files(path):
-    return send_from_directory('templates/assets', path)
-
-
-@app.route('/images/<path:path>')
-def static_files_img(path):
-    return send_from_directory('templates/images', path)
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
