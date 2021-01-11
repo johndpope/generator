@@ -46,6 +46,7 @@ def template_sub(category, subcategory):
         category=category,
         subcategory=subcategory,
         sub_kw_data=sub_kw_data,
+        length=len(sub_kw_data['keyword']),
         clean_url=clean_url,
         group=group
     )
