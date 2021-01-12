@@ -44,12 +44,8 @@ def load_all_data_from_csv():
                 "url": line['url'],
             }
 
-            data["main_subcategory"] = data['subcategories'][-2] if len(data['subcategories']) > 1 else data['subcategories'][0]
-
-            data["url_keyword"] = clean_url(data["keyword"])
-            data["url_name"] = clean_url(data["name"])
-            data["url_category"] = clean_url(data["category"])
-            data["url_mainsubcategory"] = clean_url(data["main_subcategory"])
+            data["main_subcategory"] = data['subcategories'][-2] \
+                if len(data['subcategories']) > 1 else data['subcategories'][0]
 
             all_data.append(data)
 

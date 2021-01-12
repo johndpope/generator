@@ -1,12 +1,11 @@
 from controller import MongoDriver
-from temp.sitemap import generate_urls
 
 
 conn = MongoDriver.DBConnection()
-# print(conn.get_all_groups())
-# cat = conn.get_category_by_url('reisen')
-# print(cat)
-# print(conn.get_group_by_category(cat))
+# all_g = conn.get_all_groups()
+# cat = conn.get_category_by_url(all_g, 'reisen')
+# # print(cat)
+# (x, y) = conn.get_subcategory_by_url(all_g, 'reisen', 'reiseaccessoires')
+# print(f'{x}, {y}')
+print(conn.get_keyword_by_url(list(conn.get_all_data()), 'batterie-12v-a23'))
 
-
-print(generate_urls(conn.get_all_data()))

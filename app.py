@@ -1,10 +1,9 @@
 import pprint
 
-from flask import Flask, render_template, send_from_directory, make_response, request
+from flask import Flask, render_template, make_response, request
 
 from controller import MongoDriver
 from helper.clean_url import clean_url
-from sitemap import generate_sitemap
 
 app = Flask(__name__)
 driver = MongoDriver.DBConnection()
@@ -23,7 +22,8 @@ def template_test():
 
 @app.route("/<category>")
 def template_category(category):
-    category = driver.get_category_by_url(category)
+    category = driver.get_category_by_url(all_groups, category)
+    # pp.pprint(category)
     group = driver.get_group_by_category(all_groups, category)
     return render_template('category_template.html',
                            clean_url=clean_url,
@@ -35,12 +35,11 @@ def template_category(category):
 
 @app.route("/<category>/<subcategory>")
 def template_sub(category, subcategory):
-    category = driver.get_category_by_url(category)
     group = driver.get_group_by_category(all_groups, category)
-    subcategory = driver.get_subcategory_by_url(subcategory)
+    (category, subcategory) = driver.get_subcategory_by_url(all_groups, category, subcategory)
     sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
 
-    pp.pprint(sub_kw_data)
+    # pp.pprint(sub_kw_data)
     return render_template(
         'subcategory_template.html',
         category=category,
@@ -54,9 +53,8 @@ def template_sub(category, subcategory):
 
 @app.route("/<category>/<subcategory>/<keyword>/")
 def template_page(category, subcategory, keyword):
-    category = driver.get_category_by_url(category)
-    subcategory = driver.get_subcategory_by_url(subcategory)
-    keyword = driver.get_keyword_by_url(keyword)
+    (category, subcategory) = driver.get_subcategory_by_url(all_groups, category, subcategory)
+    keyword = driver.get_keyword_by_url(driver.get_all_data(), keyword)
     products = driver.get_all_data_that_contains(keyword)
     sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
     # pp.pprint(products)
@@ -76,7 +74,7 @@ def template_sitemap():
     # pp.pprint(generate_urls())
     template = render_template(
         'sitemap.xml',
-        all_urls=generate_sitemap(request.url_root[:-1], all_groups)
+        all_urls=driver.generate_sitemap(request.url_root[:-1], all_groups)
     )
     response = make_response(template)
     response.headers['Content-Type'] = 'application/xml'

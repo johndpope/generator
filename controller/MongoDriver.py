@@ -1,6 +1,10 @@
 import random
+from datetime import datetime
+from typing import List
 
 from pymongo import MongoClient
+
+from helper.clean_url import clean_url
 from .config import *
 
 
@@ -115,7 +119,7 @@ class DBConnection:
 
         for line in all_data:
             subcat = line['main_subcategory']
-            if subcategory in subcat:
+            if subcategory == subcat:
                 keyword = line['keyword']
                 image = line['image']
 
@@ -134,41 +138,53 @@ class DBConnection:
         data = self.ebay.find({'keyword': keyword})
         return data
 
-    def get_category_by_url(self, url_category):
-        result = self.ebay.find_one({'url_category': url_category})
-        category = result['category'] if result else None
-        return category
+    @classmethod
+    def get_category_by_url(cls, all_groups, url_category):
+        filtered = next(filter(lambda x: clean_url(x['category']) == url_category, all_groups), None)
+        return filtered['category'] if filtered else None
 
-    def get_subcategory_by_url(self, url_subcategory):
-        result = self.ebay.find_one({'url_mainsubcategory': url_subcategory})
-        sub = result['main_subcategory'] if result else None
-        return sub
+    @classmethod
+    def get_subcategory_by_url(cls, all_groups, url_category, url_subcategory):
+        result = [x['subcategory'] for x in all_groups if clean_url(x['category']) == url_category]
+        if not result:
+            return None
+        subcategory = next(filter(lambda x: clean_url(x) == url_subcategory, result[0]), None)
+        category = cls.get_category_by_url(all_groups, url_category)
+        return category, subcategory if subcategory else None
 
-    def get_keyword_by_url(self, url_keyword):
-        result = self.ebay.find_one({'url_keyword': url_keyword})
-        keyword = result['keyword'] if result else None
-        return keyword
+    @classmethod
+    def get_keyword_by_url(cls, all_data, url_keyword):
+        keyword = next(filter(lambda x: clean_url(x['keyword']) == url_keyword, all_data), None)
+        return keyword['keyword'] if keyword else None
 
-    # FELIX EXTRA CODE DOWN HERE 👇🏼👇🏼👇🏼👇🏼👇🏼👇🏼👇🏼
-    """
-    Update cateogry tree
-    """
+    def generate_sitemap(self, domain, data: List):
 
-    def update_all_categories(self):
-        tree = self.get_all_categories()
-        tree_collection = self.db["tree"]
+        # Get Today's Date to add as Lastmod
+        lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
-        myquery = {"id": "main_tree"}
-        newvalues = {"$set": {"tree": tree}}
-        tree_collection.delete_one(myquery)
-        result = tree_collection.update_one(myquery, newvalues, True)
-        print(result)
+        # Fill the Sitemap Template and Write File
+        i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': domain}
+        each_map = [i]
+        for each in data:  # For each URL in the list of URLs ...
+            i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
+            link = f"{domain}/{clean_url(each['category'])}"
+            i['loc'] = link
+            each_map.append(i)
+            # print(i['loc'])
 
-    """
-    returns complete tree for sitemap 
-    """
+            for lnk in each['subcategory']:
+                i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
+                sub_link = f'{link}/{clean_url(lnk)}'
+                i['loc'] = sub_link
+                each_map.append(i)
+                # print(i['loc'])
 
-    def get_tree(self):
-        tree_collection = self.db["tree"]
-        tree = tree_collection.find_one({"id": "main_tree"})
-        return tree
+                kw_data = self.get_all_kw_of_subcategory(lnk)
+                for kw in kw_data['keyword']:
+                    i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
+                    kw_lnk = f'{sub_link}/{clean_url(kw)}'
+                    i['loc'] = kw_lnk
+                    each_map.append(i)
+                    # print(i['loc'])
+
+        return each_map
