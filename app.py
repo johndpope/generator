@@ -81,6 +81,22 @@ def template_sitemap():
     return response
 
 
+@app.route("/datenschutz")
+def template_datenschutz():
+    return render_template(
+        'datenschutz.html',
+        domain=request.host
+    )
+
+
+@app.route("/impressum")
+def template_impressum():
+    return render_template(
+        'impressum.html',
+        domain=request.host
+    )
+
+
 @app.route("/generic")
 def template_generic():
     return render_template('generic.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])

@@ -187,4 +187,12 @@ class DBConnection:
                     each_map.append(i)
                     # print(i['loc'])
 
+        # Add the following
+        y = i.copy()
+        y['loc'] = f'{domain}/datenschutz'
+        each_map.append(y)
+
+        z = i.copy()
+        z['loc'] = f'{domain}/impressum'
+        each_map.append(z)
         return each_map
