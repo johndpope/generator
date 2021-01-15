@@ -149,8 +149,7 @@ class DBConnection:
         if not result:
             return None
         subcategory = next(filter(lambda x: clean_url(x) == url_subcategory, result[0]), None)
-        category = cls.get_category_by_url(all_groups, url_category)
-        return category, subcategory if subcategory else None
+        return subcategory if subcategory else None
 
     @classmethod
     def get_keyword_by_url(cls, all_data, url_keyword):

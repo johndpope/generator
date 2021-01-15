@@ -36,10 +36,11 @@ def template_category(category):
 @app.route("/<category>/<subcategory>")
 def template_sub(category, subcategory):
     group = driver.get_group_by_category(all_groups, category)
-    (category, subcategory) = driver.get_subcategory_by_url(all_groups, category, subcategory)
+    subcategory = driver.get_subcategory_by_url(all_groups, category, subcategory)
+    category = driver.get_category_by_url(all_groups, category)
     sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
 
-    # pp.pprint(sub_kw_data)
+    # pp.pprint(subcategory)
     return render_template(
         'subcategory_template.html',
         category=category,
@@ -51,13 +52,14 @@ def template_sub(category, subcategory):
     )
 
 
-@app.route("/<category>/<subcategory>/<keyword>/")
+@app.route("/<category>/<subcategory>/<keyword>")
 def template_page(category, subcategory, keyword):
-    (category, subcategory) = driver.get_subcategory_by_url(all_groups, category, subcategory)
+    subcategory = driver.get_subcategory_by_url(all_groups, category, subcategory)
+    category = driver.get_category_by_url(all_groups, category)
     keyword = driver.get_keyword_by_url(driver.get_all_data(), keyword)
     products = driver.get_all_data_that_contains(keyword)
     sub_kw_data = driver.get_all_kw_of_subcategory(subcategory)
-    # pp.pprint(products)
+    # pp.pprint(keyword)
     return render_template(
         'page_template.html',
         category=category,
