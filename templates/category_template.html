@@ -2,6 +2,12 @@
 
 {% block title %}{{ category }}{% endblock %}
 
+{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+{% endblock %}
+
 {% block nav %}
   {% for each_sub in group['subcategory'] %}
     <li><a href="/{{ clean_url(category) }}/{{ clean_url(each_sub) }}">{{ each_sub }}</a></li>

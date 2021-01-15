@@ -2,6 +2,11 @@
 
 {% block title %}{{ request.host }}{% endblock %}
 
+{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/>
+<meta name="robots" content="noindex" />
+{% endblock %}
+
 {% block nav %}
     {% for group in groups %}
     <li><a href="/{{ clean_url(group.category) }}">{{group.category}}</a></li>

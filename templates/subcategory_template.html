@@ -2,6 +2,12 @@
 
 {% block title %}{{ subcategory }}{% endblock %}
 
+{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+{% endblock %}
+
 {% block nav %}
   {% for kw in sub_kw_data.keyword[:10] %}
       <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>

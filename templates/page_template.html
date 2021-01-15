@@ -2,15 +2,15 @@
 <html>
   <head>
     <title>{{ subcategory }}</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/>
+    <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
   </head>
   <body class="subpage">
     <!-- Header -->
     <header id="header">
       <div class="logo">
-        <a href="#">{{category}} <span>{{subcategory}}</span></a>
+        <a href="/">{{category}} <span>{{subcategory}}</span></a>
       </div>
       <a href="#menu">Menu</a>
     </header>
