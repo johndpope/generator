@@ -38,14 +38,22 @@ def load_all_data_from_csv():
                 "subcategories": line['subcategory'].split('|'),
                 "image": line['image'], "price": line['price'],
                 "item_no": line['item_no'],
-                "location": line.get('loaction'),
+                "location": line.get('location'),
                 "description": line['description'],
                 "description_link": line['description_link'],
                 "url": line['url'],
+                "main_subcategory": ""
             }
 
-            data["main_subcategory"] = data['subcategories'][-2] \
-                if len(data['subcategories']) > 1 else data['subcategories'][0]
+            if data['category'] in data['subcategories']:
+                data['subcategories'].remove(data['category'])
+
+            if 'Sonstige' in data['subcategories']:
+                data['subcategories'].remove('Sonstige')
+
+            if len(data['subcategories']):
+                data["main_subcategory"] = data['subcategories'][-2] \
+                    if len(data['subcategories']) > 1 else data['subcategories'][0]
 
             data["url_keyword"] = clean_url(data["keyword"])
             data["url_category"] = clean_url(data["category"])

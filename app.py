@@ -1,11 +1,10 @@
 import pprint
-import time
 
 from flask import Flask, render_template, make_response, request
 from flask_pymongo import PyMongo
-from controller.config import *
 
 from controller import MongoDriver
+from controller.config import *
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
@@ -36,7 +35,6 @@ def template_category(category):
 
     data = []
     for xx in subs:
-        start = time.perf_counter()
         sub_data = ebay.aggregate([
             {"$match": {'main_subcategory': xx}},
             {'$group': {'_id': '$main_subcategory',
@@ -46,8 +44,6 @@ def template_category(category):
             {'$limit': 1}
         ])
         data.append(list(sub_data)[0])
-        end = time.perf_counter()
-        # print(f'took {end - start} secs')
 
     return render_template('category_template.html',
                            clean_url=clean_url,

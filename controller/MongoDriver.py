@@ -17,7 +17,7 @@ class DBConnection:
         """
         self.client = MongoClient(
             f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
-            #"mongodb://127.0.0.1:27017"
+            # "mongodb://127.0.0.1:27017"
         )
         self.db = self.client['gen']
         self.ebay = self.db.ebay
@@ -31,25 +31,18 @@ class DBConnection:
         # pprint.pprint(item)
         return item
 
-    def get_all_data(self):
-        """
-        returns all scraped data 'ebay' from the database
-        :return: [List]
-        """
-        return self.ebay.find()
-
     @classmethod
     def get_all_groups(cls, ebay):
         """
         Groups the entire data in the database and returns a
         list of all the data grouped into categories
         eg: [
-            {'_id': 'Büro & Schreibwaren',
-            'subcategories': ['Möbel', 'Koffer, Taschen & Accessoires', ...],
-            'images': ['https://i.ebayimg.com/images/g/8HsAAOSwmQxfgGeV/s-l300.jpg']
-            },
+            {   '_id': 'Sport',
+                'subcategories': ['Druckluftkompressoren', ...]
+                'images': [   'https://i.ebayimg.com/images/g/JekAAOSwE3RftrU8/s-l300.jpg',...]
             ...
         ]
+        :type ebay: object
         :return: List of 10 randomly selected categories
         """
         grouped_data = ebay.aggregate([{'$group': {'_id': "$category",
@@ -58,8 +51,8 @@ class DBConnection:
                                                    }}
                                        ])
         grouped_data.close()
-
-        return random.sample(list(filter(lambda x: len(x['subcategories']) > 5, grouped_data)), 10)
+        return random.sample(list(filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories'])
+                                         , grouped_data)), 10)
 
     @classmethod
     def get_group_by_category(cls, groups, category):
