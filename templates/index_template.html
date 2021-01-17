@@ -11,7 +11,7 @@
 
 {% block nav %}
     {% for group in groups %}
-    <li><a href="/{{ clean_url(group.category) }}">{{group.category}}</a></li>
+    <li><a href="/{{ clean_url(group._id) }}">{{group._id}}</a></li>
     {% endfor %}
 {% endblock %}
 
@@ -28,18 +28,18 @@
               <div class="content">
                 <header class="align-center">
                   <p>maecenas sapien feugiat ex purus</p>
-                  <h2>{{group.category}}</h2>
+                  <h2>{{group._id}}</h2>
                 </header>
                 <p>
-                  Unsere Angebot in {{group.category}}:
+                  Unsere Angebot in {{group._id}}:
                   <ul>
-                  {% for subcategory in group.subcategory %}
-                    <li><a href="/{{ clean_url(group.category) }}/{{ clean_url(subcategory) }}">{{subcategory}}</a></li>
+                  {% for subcategory in group.subcategories[:10] %}
+                    <li><a href="/{{ clean_url(group._id) }}/{{ clean_url(subcategory) }}">{{subcategory}}</a></li>
                   {% endfor %}
                   </ul>
                 </p>
                 <footer class="align-center">
-                  <a href="/{{ clean_url(group.category) }}" class="button alt">Learn More</a>
+                  <a href="/{{ clean_url(group._id) }}" class="button alt">Learn More</a>
                 </footer>
               </div>
             </div>

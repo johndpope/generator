@@ -10,8 +10,8 @@
 {% endblock %}
 
 {% block nav %}
-  {% for each_sub in group['subcategory'] %}
-    <li><a href="/{{ clean_url(category) }}/{{ clean_url(each_sub) }}">{{ each_sub }}</a></li>
+  {% for each in data %}
+    <li><a href="/{{ clean_url(category) }}/{{ clean_url(each._id) }}">{{ each._id }}</a></li>
   {% endfor %}
 {% endblock %}
 
@@ -19,27 +19,27 @@
     <section id="one" class="wrapper style2">
       <div class="inner">
         <div class="grid-style">
-          {% for each in group.subcategory %}
+          {% for each in data %}
           <div>
             <div class="box">
               <div class="image fit">
-                <img src="{{ get_all_kw_of(each).images | random() }}" alt="" />
+                <img src="{{ each.images | random() }}" alt="" />
               </div>
               <div class="content">
                 <header class="align-center">
                   <p>maecenas sapien feugiat ex purus</p>
-                  <h2>{{ each }}</h2>
+                  <h2>{{ each._id }}</h2>
                 </header>
                 <p>
-                  Unsere Angebot in {{ each }}:
+                  Unsere Angebot in {{ each._id }}:
                   <ul>
-                  {% for kw in get_all_kw_of(each)['keyword'][:10] %}
-                    <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
+                  {% for kw in each.keywords[:10] %}
+                    <li><a href="/{{ clean_url(category) }}/{{ clean_url(each._id) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
                   {% endfor %}
                   </ul>
                 </p>
                 <footer class="align-center">
-                  <a href="/{{ clean_url(category) }}/{{ clean_url(each) }}" class="button alt">Learn More</a>
+                  <a href="/{{ clean_url(category) }}/{{ clean_url(each._id) }}" class="button alt">Learn More</a>
                 </footer>
               </div>
             </div>

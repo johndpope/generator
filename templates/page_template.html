@@ -21,7 +21,7 @@
     <!-- Nav -->
     <nav id="menu">
       <ul class="links">
-        {% for kw in sub_kw_data.keyword[:10] %}
+        {% for kw in data_of_sub.keywords[:10] %}
             <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
         {% endfor %}
       </ul>
@@ -31,8 +31,8 @@
     <section id="One" class="wrapper style3">
       <div class="inner">
         <header class="align-center">
-          <p>{{subcategory}}</p>
-          <h2>{{keyword}}</h2>
+          <p>{{ subcategory }}</p>
+          <h2>{{ keyword }}</h2>
         </header>
       </div>
     </section>
@@ -45,14 +45,14 @@
           <div>
             <div class="box">
               <div class="image fit">
-                <img src="{{product.image}}" alt="" />
+                <img src="{{ product.image }}" alt="" />
               </div>
               <div class="content">
                 <header class="align-center">
-                  <p>{{product.keyword}}</p>
-                  <h2>{{product.name}}</h2>
+                  <p>{{ product.keyword }}</p>
+                  <h2>{{ product.name }}</h2>
                 </header>
-                <p>{{product.description}}</p>
+                <p>{{ product.description }}</p>
                 <footer class="align-center">
                   <a href="#" class="button alt">Learn More</a>
                 </footer>
@@ -99,34 +99,7 @@
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer id="footer">
-      <div class="container">
-        <ul class="icons">
-          <li>
-            <a href="#" class="icon fa-twitter"
-              ><span class="label">Twitter</span></a
-            >
-          </li>
-          <li>
-            <a href="#" class="icon fa-facebook"
-              ><span class="label">Facebook</span></a
-            >
-          </li>
-          <li>
-            <a href="#" class="icon fa-instagram"
-              ><span class="label">Instagram</span></a
-            >
-          </li>
-          <li>
-            <a href="#" class="icon fa-envelope-o"
-              ><span class="label">Email</span></a
-            >
-          </li>
-        </ul>
-      </div>
-      <div class="copyright">&copy; Untitled. All rights reserved.</div>
-    </footer>
+    {% include 'footer.html' %}
 
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
