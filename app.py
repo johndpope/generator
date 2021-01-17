@@ -20,7 +20,6 @@ all_groups = driver.get_all_groups(ebay)
 pp = pprint.PrettyPrinter(indent=4)
 
 
-
 @app.route("/")
 def template_test():
     # pp.pprint(all_groups)
