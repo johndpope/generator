@@ -8,8 +8,8 @@ from controller.config import *
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
-# app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/gen"
+# app.config["MONGO_URI"] = f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
+app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/gen"
 mongo = PyMongo(app)
 ebay = mongo.db.ebay
 
@@ -30,8 +30,10 @@ def template_test():
 @app.route("/<category>")
 def template_category(category):
     category = driver.get_category_by_url(ebay, category)
-    group = driver.get_group_by_category(all_groups, category)
-    subs = group['subcategories'][:10]
+    subs = []
+    for group in all_groups:
+        if group.get("_id") == category:
+            subs = group['subcategories'][:10]
 
     data = []
     for xx in subs:

@@ -16,8 +16,8 @@ class DBConnection:
         Credentials are set up in config.py
         """
         self.client = MongoClient(
-            f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
-            # "mongodb://127.0.0.1:27017"
+            #f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
+            "mongodb://127.0.0.1:27017"
         )
         self.db = self.client['gen']
         self.ebay = self.db.ebay
