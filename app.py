@@ -1,6 +1,6 @@
 import pprint
 
-from flask import Flask, render_template, make_response, request
+from flask import Flask, render_template, make_response, request, redirect, url_for
 from flask_pymongo import PyMongo
 
 from controller import MongoDriver
@@ -87,6 +87,14 @@ def template_page(category, subcategory, keyword):
     keyword = driver.get_keyword_by_url(ebay, keyword)
     products = driver.get_all_data_that_contains(ebay, keyword)
 
+    other_categories = []
+    for group in all_groups:
+        if group.get("_id") == category:
+            other_categories = group['subcategories'][:10]
+
+    if subcategory in other_categories:
+        other_categories.remove(subcategory)
+
     sub_data = ebay.aggregate([
         {"$match": {'main_subcategory': subcategory}},
         {'$group': {'_id': '$main_subcategory',
@@ -101,11 +109,18 @@ def template_page(category, subcategory, keyword):
         'page_template.html',
         category=category,
         subcategory=subcategory,
+        other_categories=other_categories,
         keyword=keyword,
         data_of_sub=data_of_sub,
         products=list(products),
         clean_url=clean_url
     )
+
+
+@app.route("/<category>/<subcategory>/<keyword>/")
+def template_page_redirect(category, subcategory, keyword):
+    keyword = keyword.replace('/', '')
+    return redirect(url_for('template_page', category=category, subcategory=subcategory, keyword=keyword))
 
 
 @app.route("/sitemap.xml")

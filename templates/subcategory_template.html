@@ -9,6 +9,17 @@
 <meta name="Here comes SEO title" content="Here comes SEO description content.">
 {% endblock %}
 
+{% block header %}
+  <header id="header">
+    <div class="logo">
+      <a href="/">start</a> >
+      <a href="/{{ clean_url(category) }}">{{ category }}</a> >
+      <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}"><span>{{ subcategory }}</span></a>
+    </div>
+    <a href="#menu">Keywords</a>
+  </header>
+{% endblock %}
+
 {% block nav %}
   {% for kw in data['keywords'][:10] %}
       <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
@@ -30,14 +41,6 @@
                   <p>maecenas sapien feugiat ex purus</p>
                   <h2>{{ data.keywords[index] }}</h2>
                 </header>
-<!--                <p>-->
-<!--                  Unsere Angebot in {{ data.keywords[i] }}:-->
-<!--                  <ul>-->
-<!--                    {% for kw in data.keywords[:10] %}-->
-<!--                    <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>-->
-<!--                    {% endfor %}-->
-<!--                  </ul>-->
-<!--                </p>-->
                 <footer class="align-center">
                   <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(data.keywords[index]) }}" class="button alt">Learn More</a>
                 </footer>

@@ -13,16 +13,19 @@
     <!-- Header -->
     <header id="header">
       <div class="logo">
-        <a href="/">{{category}} <span>{{subcategory}}</span></a>
+        <a href="/">start</a> >
+        <a href="/{{ clean_url(category) }}">{{ category.lower() or 'NONE' }}</a> >
+        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}">{{ subcategory.lower() or 'NONE' }}</a> >
+        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(keyword) }}"><span>{{ keyword.lower() or 'NONE' }}</span></a>
       </div>
-      <a href="#menu">Menu</a>
+      <a href="#menu">Other Categories</a>
     </header>
 
     <!-- Nav -->
     <nav id="menu">
       <ul class="links">
-        {% for kw in data_of_sub.keywords[:10] %}
-            <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
+        {% for each in other_categories %}
+            <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}">{{ each }}</a></li>
         {% endfor %}
       </ul>
     </nav>
@@ -37,8 +40,26 @@
       </div>
     </section>
 
+    <section id="two" class="wrapper style2">
+      <div class="inner">
+        <div class="box" class="align-center">
+          <div class="content">
+          <header>
+            <h2>Video Data for {{subcategory}} - {{keyword}}</h2>
+          </header>
+          <div class="video-box">
+            <iframe width="100%" height="600px" src="https://www.youtube-nocookie.com/embed/JtEv_3Rwn1o" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+            </iframe>
+          </div>
+          </div>
+        </div>
+      </div>
+
+
     <!-- Products -->
     <section id="one" class="wrapper style2">
+
       <div class="inner">
         <div class="grid-style">
           {% for product in products %}
@@ -53,9 +74,6 @@
                   <h2>{{ product.name }}</h2>
                 </header>
                 <p>{{ product.description }}</p>
-                <footer class="align-center">
-                  <a href="#" class="button alt">Learn More</a>
-                </footer>
               </div>
             </div>
           </div>
@@ -78,7 +96,7 @@
             </p>
 
             <h2 class="align-center">
-              HERE COMES 800 WORDS SUBPAGE GPT2 TEXT DESCRIPTION
+              800 WORDS SUBPAGE GPT2 TEXT DESCRIPTION
             </h2>
 
             <p>
@@ -117,6 +135,15 @@
               Nullam ac auctor mauris, in hendrerit libero.
             </p>
           </div>
+          <div class="content">
+            <h2>Additional categories in {{ category }}:</h2>
+            <ul>
+                {% for each in other_categories %}
+                  <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}">{{ each.title() }}</a></li>
+                {% endfor %}
+            </ul>
+          </div>
+
         </div>
       </div>
     </section>

@@ -2,11 +2,13 @@ import re
 
 
 def sanitize_url(str):
-    return str.lower().replace('/', '').replace(', ', '-').replace('&', 'und').replace(' ', '-').replace('---', '-').replace('.', '')
+    if str:
+        return str.lower().replace('/', '').replace(', ', '-').replace('&', 'und').replace(' ', '-').replace('---', '-').replace('.', '')
+    return None
 
 
 def clean_url(str):
-    return sanitize_url(deEmojify(str))
+    return sanitize_url(deEmojify(str)) if str else ''
 
 
 def deEmojify(text):
