@@ -3,7 +3,18 @@ import re
 
 def sanitize_url(str):
     if str:
-        return str.lower().replace('/', '').replace(', ', '-').replace('&', 'und').replace(' ', '-').replace('---', '-').replace('.', '')
+        return str.lower()\
+            .replace('/', '')\
+            .replace(', ', '-')\
+            .replace(':', '-')\
+            .replace('&', 'und')\
+            .replace(' ', '-')\
+            .replace('---', '-')\
+            .replace('--', '-')\
+            .replace('.', '')\
+            .replace('ö', 'oe')\
+            .replace('ä', 'ae')\
+            .replace('ü', 'ue')
     return None
 
 

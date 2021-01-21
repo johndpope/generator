@@ -113,7 +113,8 @@ def template_page(category, subcategory, keyword):
         keyword=keyword,
         data_of_sub=data_of_sub,
         products=list(products),
-        clean_url=clean_url
+        clean_url=clean_url,
+        eval=eval
     )
 
 

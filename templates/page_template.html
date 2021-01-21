@@ -14,9 +14,9 @@
     <header id="header">
       <div class="logo">
         <a href="/">start</a> >
-        <a href="/{{ clean_url(category) }}">{{ category.lower() or 'NONE' }}</a> >
-        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}">{{ subcategory.lower() or 'NONE' }}</a> >
-        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(keyword) }}"><span>{{ keyword.lower() or 'NONE' }}</span></a>
+        <a href="/{{ clean_url(category) }}">{{ category }}</a> >
+        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}">{{ subcategory }}</a> >
+        <a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(keyword) }}"><span>{{ keyword }}</span></a>
       </div>
       <a href="#menu">Other Categories</a>
     </header>
@@ -52,6 +52,28 @@
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
             </iframe>
           </div>
+          <h4>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras at
+              dignissim augue, in iaculis neque. Etiam bibendum felis ac
+              vulputate pellentesque. Cras non blandit quam. Nunc porta, est non
+              posuere sagittis, neque nunc pellentesque diam, a iaculis lacus
+              urna vitae purus. In non dui vel est tempor faucibus. Aliquam erat
+              volutpat. Quisque vel est vitae nibh laoreet auctor. In nec libero
+              dui. Nulla ullamcorper, dolor nec accumsan viverra, libero eros
+              rutrum metus, vel lacinia magna odio non nunc. Praesent semper
+              felis eu rhoncus aliquam. Donec at quam ac libero vestibulum
+              pretium. Nunc faucibus vel arcu in malesuada. Aenean at velit
+              odio. Vestibulum ante ipsum primis in faucibus orci luctus et
+              ultrices posuere cubilia Curae; Maecenas commodo erat eget
+              molestie sollicitudin. Donec imperdiet, ex sed blandit dictum,
+              ipsum metus ultrices arcu, vitae euismod nisl sapien vitae tortor.
+
+              Vivamus nec odio ac ligula congue feugiat at vitae leo. Aenean sem
+              justo, finibus sed dui eu, accumsan facilisis dolor. Fusce quis
+              dui eget odio iaculis aliquam vel sed velit. Nulla pellentesque
+              posuere semper. Nulla eu sagittis lorem, a auctor nulla. Sed ac
+              condimentum orci, ac varius ante. Nunc blandit quam sit amet
+              sollicitudin sodales.
           </div>
         </div>
       </div>
@@ -73,7 +95,11 @@
                   <p>{{ product.keyword }}</p>
                   <h2>{{ product.name }}</h2>
                 </header>
-                <p>{{ product.description }}</p>
+                <ul>
+                  {% for k, v in eval(product.description).items() %}
+                    <li>{{k}}: {{v}}</li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
           </div>
@@ -136,7 +162,15 @@
             </p>
           </div>
           <div class="content">
-            <h2>Additional categories in {{ category }}:</h2>
+            <h2>Ebenso lohnenswert in {{ subcategory }}:</h2>
+            <ul>
+               {% for kw in data_of_sub['keywords'][:10] %}
+                  <li><a href="/{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(kw) }}">{{ kw }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="content">
+            <h2>Zusätzliche Kategorien in in {{ category }}:</h2>
             <ul>
                 {% for each in other_categories %}
                   <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}">{{ each.title() }}</a></li>
