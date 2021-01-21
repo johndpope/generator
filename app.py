@@ -1,4 +1,5 @@
 import pprint
+import random
 
 from flask import Flask, render_template, make_response, request, redirect, url_for
 from flask_pymongo import PyMongo
@@ -16,11 +17,15 @@ ebay = mongo.db.ebay
 driver = MongoDriver.DBConnection()
 all_groups = driver.get_all_groups(ebay)
 
+with app.test_request_context():
+    print(request.host_url)
+    (sitemap, other_subpages) = driver.generate_sitemap(request.host_url, ebay, all_groups)
+
 pp = pprint.PrettyPrinter(indent=4)
 
 
 @app.route("/")
-def template_test():
+def template_index():
     # pp.pprint(all_groups)
     return render_template('index_template.html',
                            clean_url=clean_url,
@@ -30,6 +35,9 @@ def template_test():
 @app.route("/<category>")
 def template_category(category):
     category = driver.get_category_by_url(ebay, category)
+    if not category:
+        return redirect(url_for('template_index'))
+
     subs = []
     for group in all_groups:
         if group.get("_id") == category:
@@ -59,6 +67,10 @@ def template_category(category):
 def template_sub(category, subcategory):
     group = driver.get_group_by_category(all_groups, category)
     subcategory = driver.get_subcategory_by_url(ebay, subcategory)
+
+    if not subcategory:
+        return redirect(url_for('template_index'))
+
     category = driver.get_category_by_url(ebay, category)
     sub_data = ebay.aggregate([
             {"$match": {'main_subcategory': subcategory}},
@@ -85,6 +97,10 @@ def template_page(category, subcategory, keyword):
     subcategory = driver.get_subcategory_by_url(ebay, subcategory)
     category = driver.get_category_by_url(ebay, category)
     keyword = driver.get_keyword_by_url(ebay, keyword)
+
+    if not keyword:
+        return redirect(url_for('template_index'))
+
     products = driver.get_all_data_that_contains(ebay, keyword)
 
     other_categories = []
@@ -92,27 +108,19 @@ def template_page(category, subcategory, keyword):
         if group.get("_id") == category:
             other_categories = group['subcategories'][:10]
 
-    if subcategory in other_categories:
-        other_categories.remove(subcategory)
+    subpages = {}
+    for subpage in other_subpages:
+        if subpage.get('keyword') == keyword:
+            subpages = subpage
 
-    sub_data = ebay.aggregate([
-        {"$match": {'main_subcategory': subcategory}},
-        {'$group': {'_id': '$main_subcategory',
-                    'keywords': {'$addToSet': '$keyword'},
-                    'images': {'$addToSet': '$image'}
-                    }},
-        {'$limit': 1}
-    ])
-
-    data_of_sub = list(sub_data)[0]
     return render_template(
         'page_template.html',
         category=category,
         subcategory=subcategory,
         other_categories=other_categories,
         keyword=keyword,
-        data_of_sub=data_of_sub,
         products=list(products),
+        other_subpages=subpages['suggestions'],
         clean_url=clean_url,
         eval=eval
     )
@@ -128,7 +136,7 @@ def template_page_redirect(category, subcategory, keyword):
 def template_sitemap():
     template = render_template(
         'sitemap.xml',
-        all_urls=driver.generate_sitemap(request.url_root[:-1], ebay, all_groups)
+        all_urls=sitemap
     )
     response = make_response(template)
     response.headers['Content-Type'] = 'application/xml'

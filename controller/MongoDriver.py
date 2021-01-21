@@ -115,7 +115,11 @@ class DBConnection:
         result = ebay.find_one({'url_keyword': url_keyword})
         return result['keyword'] if result else None
 
-    def generate_sitemap(self, domain, ebay, data: List):
+    @classmethod
+    def generate_sitemap(cls, domain, ebay, data: List):
+
+        all_kws = []
+        subpages = []
 
         # Get Today's Date to add as Lastmod
         lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
@@ -124,14 +128,14 @@ class DBConnection:
         i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': domain}
         each_map = [i]
         for each in data:  # For each URL in the list of URLs ...
-            i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
-            link = f"{domain}/{clean_url(each['_id'])}"
+            i = i.copy()
+            link = f"{domain}{clean_url(each['_id'])}"
             i['loc'] = link
             each_map.append(i)
             # print(i['loc'])
 
             for lnk in each['subcategories']:
-                i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
+                i = i.copy()
                 sub_link = f'{link}/{clean_url(lnk)}'
                 i['loc'] = sub_link
                 each_map.append(i)
@@ -147,10 +151,13 @@ class DBConnection:
                         {'$limit': 1}
                     ])
                 )[0]
-                for kw in kw_data['keywords']:
-                    i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0'}
+                for kw in kw_data['keywords'][:10]:
+                    i = i.copy()
                     kw_lnk = f'{sub_link}/{clean_url(kw)}'
                     i['loc'] = kw_lnk
+
+                    all_kws.append(kw)
+                    subpages.append(kw_lnk)
                     each_map.append(i)
                     # print(i['loc'])
 
@@ -162,4 +169,10 @@ class DBConnection:
         z = i.copy()
         z['loc'] = f'{domain}/impressum'
         each_map.append(z)
-        return each_map
+
+        other_subpages = []
+        for q in all_kws:
+            k = {'keyword': q, 'suggestions': random.sample(subpages, 10)}
+            other_subpages.append(k)
+
+        return each_map, other_subpages
