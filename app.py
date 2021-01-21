@@ -1,7 +1,6 @@
 import pprint
-import random
 
-from flask import Flask, render_template, make_response, request, redirect, url_for
+from flask import Flask, render_template, make_response, request, redirect, url_for, current_app
 from flask_pymongo import PyMongo
 
 from controller import MongoDriver
@@ -17,9 +16,7 @@ ebay = mongo.db.ebay
 driver = MongoDriver.DBConnection()
 all_groups = driver.get_all_groups(ebay)
 
-with app.test_request_context():
-    print(request.host_url)
-    (sitemap, other_subpages) = driver.generate_sitemap(request.host_url, ebay, all_groups)
+(sitemap, other_subpages) = driver.generate_sitemap(ebay, all_groups)
 
 pp = pprint.PrettyPrinter(indent=4)
 

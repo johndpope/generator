@@ -12,6 +12,15 @@
 <link rel="canonical" href="{{ request.host_url }}">
 {% endblock %}
 
+{% block header %}
+  <header id="header">
+    <div class="logo">
+      <a href="/"><span>Home</span></a> >
+    </div>
+    <a href="#menu">Menu</a>
+  </header>
+{% endblock %}
+
 {% block nav %}
     {% for group in groups %}
     <li><a href="/{{ clean_url(group._id) }}">{{group._id}}</a></li>

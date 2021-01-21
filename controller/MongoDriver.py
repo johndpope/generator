@@ -116,7 +116,8 @@ class DBConnection:
         return result['keyword'] if result else None
 
     @classmethod
-    def generate_sitemap(cls, domain, ebay, data: List):
+    def generate_sitemap(cls, ebay, data: List):
+        empty = '{}'
 
         all_kws = []
         subpages = []
@@ -125,11 +126,11 @@ class DBConnection:
         lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
         # Fill the Sitemap Template and Write File
-        i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': domain}
+        i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': empty}
         each_map = [i]
         for each in data:  # For each URL in the list of URLs ...
             i = i.copy()
-            link = f"{domain}{clean_url(each['_id'])}"
+            link = f"{empty}{clean_url(each['_id'])}"
             i['loc'] = link
             each_map.append(i)
             # print(i['loc'])
@@ -163,11 +164,11 @@ class DBConnection:
 
         # Add the following
         y = i.copy()
-        y['loc'] = f'{domain}/datenschutz'
+        y['loc'] = f'{empty}/datenschutz'
         each_map.append(y)
 
         z = i.copy()
-        z['loc'] = f'{domain}/impressum'
+        z['loc'] = f'{empty}/impressum'
         each_map.append(z)
 
         other_subpages = []
