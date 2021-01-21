@@ -7,6 +7,10 @@
 <meta name="robots" content="noindex" />
 
 <meta name="Here comes SEO title" content="Here comes SEO description content.">
+
+<link rel="shortlink" href="{{ request.host_url }}{{ clean_url(category) }}/{{ clean_url(subcategory) }}">
+<link rel="canonical" href="{{ request.host_url }}{{ clean_url(category) }}/{{ clean_url(subcategory) }}">
+
 {% endblock %}
 
 {% block header %}

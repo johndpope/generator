@@ -8,6 +8,8 @@
     <meta name="Here comes SEO title" content="Here comes SEO description content.">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+    <link rel="shortlink" href="{{ request.host_url }}{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(keyword) }}">
+    <link rel="canonical" href="{{ request.host_url }}{{ clean_url(category) }}/{{ clean_url(subcategory) }}/{{ clean_url(keyword) }}">
   </head>
   <body class="subpage">
     <!-- Header -->
