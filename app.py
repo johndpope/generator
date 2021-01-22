@@ -110,6 +110,9 @@ def template_page(category, subcategory, keyword):
         if subpage.get('keyword') == keyword:
             subpages = subpage
 
+    # print(subpages)
+    valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
+
     return render_template(
         'page_template.html',
         category=category,
@@ -117,7 +120,7 @@ def template_page(category, subcategory, keyword):
         other_categories=other_categories,
         keyword=keyword,
         products=list(products),
-        other_subpages=subpages['suggestions'],
+        other_subpages=valid_subpages[:10],
         clean_url=clean_url,
         eval=eval
     )

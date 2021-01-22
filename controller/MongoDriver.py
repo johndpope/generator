@@ -173,7 +173,7 @@ class DBConnection:
 
         other_subpages = []
         for q in all_kws:
-            k = {'keyword': q, 'suggestions': random.sample(subpages, 10)}
+            k = {'keyword': q, 'suggestions': random.sample(subpages, 15)}
             other_subpages.append(k)
 
         return each_map, other_subpages
