@@ -174,7 +174,7 @@
           <div class="content">
             <h2>Additional Subcategories In {{ category }}:</h2>
             <ul>
-                {% for each in other_categories %}
+                {% for each in other_categories[:3] %}
                   <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}">{{ each.title() }}</a></li>
                 {% endfor %}
             </ul>

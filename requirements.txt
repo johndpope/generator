@@ -3,4 +3,3 @@ flask
 dnspython
 pymongo
 flask-pymongo
-pprint

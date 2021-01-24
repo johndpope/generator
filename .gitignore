@@ -1,4 +1,10 @@
-.idea/*
-__pycache__/*
 config.py
+sslfiles/*
+logs/*
+
 Pipfile
+.idea/*
+__pycache__/
+*.py[cod]
+*$py.class
+
