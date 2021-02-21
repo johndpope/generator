@@ -8,9 +8,11 @@ from controller.config import *
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
+app.config["MONGO_URI"] = f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18:27017/crawler?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false'
+
 # app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/gen"
 mongo = PyMongo(app)
+# mongo.client = mongo['crawler']
 ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection()

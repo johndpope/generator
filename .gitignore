@@ -1,7 +1,7 @@
 config.py
-sslfiles/*
+data/certs/
 logs/*
-
+database/
 Pipfile
 .idea/*
 __pycache__/

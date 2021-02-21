@@ -16,10 +16,11 @@ class DBConnection:
         Credentials are set up in config.py
         """
         self.client = MongoClient(
-            f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
+            # f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
             # "mongodb://127.0.0.1:27017"
+	    f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18'
         )
-        self.db = self.client['gen']
+        self.db = self.client['crawler']
         self.ebay = self.db.ebay
 
     def test(self):
