@@ -18,9 +18,9 @@ class DBConnection:
         self.client = MongoClient(
             # f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
             # "mongodb://127.0.0.1:27017"
-	    f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18'
+            f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18'
         )
-        self.db = self.client['crawler']
+        self.db = self.client['gen']
         self.ebay = self.db.ebay
 
     def test(self):
@@ -49,11 +49,12 @@ class DBConnection:
         grouped_data = ebay.aggregate([{'$group': {'_id': "$category",
                                                    'subcategories': {'$addToSet': '$main_subcategory'},
                                                    'images': {'$addToSet': '$image'}
-                                                   }}
+                                                   }},
+                                       {'$sample': {'size': 3000}}
                                        ])
         grouped_data.close()
-        return random.sample(list(filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories'])
-                                         , grouped_data)), 10)
+        return random.sample(list(filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']),
+                                         grouped_data)), 10)
 
     @classmethod
     def get_group_by_category(cls, groups, category):

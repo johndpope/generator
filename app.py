@@ -12,7 +12,6 @@ app.config["MONGO_URI"] = f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18:2701
 
 # app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/gen"
 mongo = PyMongo(app)
-# mongo.client = mongo['crawler']
 ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection()
