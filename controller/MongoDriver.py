@@ -1,4 +1,5 @@
 import random
+import time
 from datetime import datetime
 from typing import List
 
@@ -10,30 +11,15 @@ from .config import *
 
 class DBConnection:
 
-    def __init__(self):
+    def __init__(self, mongo):
         """
         Sets up a connection to the MongoDB instance.
         Credentials are set up in config.py
         """
-        self.client = MongoClient(
-            # f'mongodb+srv://{mongo_user}:{mongo_pw}@cluster0.en1dj.mongodb.net/gen?retryWrites=true&w=majority'
-            # "mongodb://127.0.0.1:27017"
-            f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18'
-        )
-        self.db = self.client['gen']
-        self.ebay = self.db.ebay
+        self.mongo = mongo
+        self.ebay = self.mongo.db.ebay
 
-    def test(self):
-        """
-           Tests the connection and returns + prints single item
-           :return: Dict[]
-        """
-        item = self.ebay.find_one()
-        # pprint.pprint(item)
-        return item
-
-    @classmethod
-    def get_all_groups(cls, ebay):
+    def get_all_groups(self):
         """
         Groups the entire data in the database and returns a
         list of all the data grouped into categories
@@ -46,15 +32,28 @@ class DBConnection:
         :type ebay: object
         :return: List of 10 randomly selected categories
         """
-        grouped_data = ebay.aggregate([{'$group': {'_id': "$category",
-                                                   'subcategories': {'$addToSet': '$main_subcategory'},
-                                                   'images': {'$addToSet': '$image'}
-                                                   }},
-                                       {'$sample': {'size': 3000}}
-                                       ])
-        grouped_data.close()
-        return random.sample(list(filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']),
-                                         grouped_data)), 10)
+
+        # start timer
+        start_timer = time.perf_counter()
+        grouped_data = self.ebay.aggregate([{'$group': {'_id': "$category",
+                                                        'subcategories': {'$addToSet': '$main_subcategory'},
+                                                        'images': {'$addToSet': '$image'}
+                                                        }}
+                                            ])
+
+        # timestamp1
+        timestamp1 = time.perf_counter()
+
+        filtered_list = list(
+            filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']), grouped_data))
+        randomized = random.sample(filtered_list, 10)
+
+        # timestamp2
+        timestamp2 = time.perf_counter()
+
+        print(timestamp1 - start_timer)
+        print(timestamp2 - timestamp1)
+        return randomized
 
     @classmethod
     def get_group_by_category(cls, groups, category):
@@ -66,8 +65,7 @@ class DBConnection:
             if group.get("_id") == category:
                 return group if group else None
 
-    @classmethod
-    def get_all_kw_of_subcategory(cls, ebay, subcategory):
+    def get_all_kw_of_subcategory(self, subcategory):
         """
         Scans through the scraped CSV file and returns a Dict
         in the form
@@ -80,7 +78,7 @@ class DBConnection:
         :param subcategory:
         :return:
         """
-        data = ebay.aggregate([
+        data = self.ebay.aggregate([
             {"$match": {'main_subcategory': subcategory}},
             {'$group': {'_id': '$main_subcategory',
                         'keywords': {'$addToSet': '$keyword'},
@@ -91,34 +89,29 @@ class DBConnection:
 
         return list(data)[0] if list(data) else None
 
-    @classmethod
-    def get_all_data_that_contains(cls, ebay, keyword):
+    def get_all_data_that_contains(self, keyword):
         """
         Gets all the data in the database that contains that keyword
         :param ebay:
         :param keyword:
         :return: [List]
         """
-        data = ebay.find({'keyword': keyword})
+        data = self.ebay.find({'keyword': keyword})
         return data
 
-    @classmethod
-    def get_category_by_url(cls, ebay, url_category):
-        result = ebay.find_one({'url_category': url_category})
+    def get_category_by_url(self, url_category):
+        result = self.ebay.find_one({'url_category': url_category})
         return result['category'] if result else None
 
-    @classmethod
-    def get_subcategory_by_url(cls, ebay, url_subcategory):
-        result = ebay.find_one({'url_mainsubcategory': url_subcategory})
+    def get_subcategory_by_url(self, url_subcategory):
+        result = self.ebay.find_one({'url_mainsubcategory': url_subcategory})
         return result['main_subcategory'] if result else None
 
-    @classmethod
-    def get_keyword_by_url(cls, ebay, url_keyword):
-        result = ebay.find_one({'url_keyword': url_keyword})
+    def get_keyword_by_url(self, url_keyword):
+        result = self.ebay.find_one({'url_keyword': url_keyword})
         return result['keyword'] if result else None
 
-    @classmethod
-    def generate_sitemap(cls, ebay, data: List):
+    def generate_sitemap(self, data: List):
         empty = '{}'
 
         all_kws = []
@@ -145,7 +138,7 @@ class DBConnection:
                 # print(i['loc'])
 
                 kw_data = list(
-                    ebay.aggregate([
+                    self.ebay.aggregate([
                         {"$match": {'main_subcategory': lnk}},
                         {'$group': {'_id': '$main_subcategory',
                                     'keywords': {'$addToSet': '$keyword'},

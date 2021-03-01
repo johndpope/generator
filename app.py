@@ -1,5 +1,7 @@
+import os
 import pprint
 
+from dotenv import load_dotenv
 from flask import Flask, render_template, make_response, request, redirect, url_for, current_app
 from flask_pymongo import PyMongo
 
@@ -8,16 +10,17 @@ from controller.config import *
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = f'mongodb://{mongo_user}:{mongo_pw}@202.61.242.18:27017/crawler?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false'
 
-# app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/gen"
+load_dotenv('.env')
+app.config["MONGO_URI"] = os.environ.get('PROD_DATABASE', "mongodb://127.0.0.1:27017/gen")
+
 mongo = PyMongo(app)
 ebay = mongo.db.ebay
 
-driver = MongoDriver.DBConnection()
-all_groups = driver.get_all_groups(ebay)
+driver = MongoDriver.DBConnection(mongo)
+all_groups = driver.get_all_groups()
 
-(sitemap, other_subpages) = driver.generate_sitemap(ebay, all_groups)
+(sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -32,7 +35,7 @@ def template_index():
 
 @app.route("/<category>")
 def template_category(category):
-    category = driver.get_category_by_url(ebay, category)
+    category = driver.get_category_by_url(category)
     if not category:
         return redirect(url_for('template_index'))
 
@@ -64,12 +67,12 @@ def template_category(category):
 @app.route("/<category>/<subcategory>")
 def template_sub(category, subcategory):
     group = driver.get_group_by_category(all_groups, category)
-    subcategory = driver.get_subcategory_by_url(ebay, subcategory)
+    subcategory = driver.get_subcategory_by_url(subcategory)
 
     if not subcategory:
         return redirect(url_for('template_index'))
 
-    category = driver.get_category_by_url(ebay, category)
+    category = driver.get_category_by_url(category)
     sub_data = ebay.aggregate([
             {"$match": {'main_subcategory': subcategory}},
             {'$group': {'_id': '$main_subcategory',
@@ -92,14 +95,14 @@ def template_sub(category, subcategory):
 
 @app.route("/<category>/<subcategory>/<keyword>")
 def template_page(category, subcategory, keyword):
-    subcategory = driver.get_subcategory_by_url(ebay, subcategory)
-    category = driver.get_category_by_url(ebay, category)
-    keyword = driver.get_keyword_by_url(ebay, keyword)
+    subcategory = driver.get_subcategory_by_url(subcategory)
+    category = driver.get_category_by_url(category)
+    keyword = driver.get_keyword_by_url(keyword)
 
     if not keyword:
         return redirect(url_for('template_index'))
 
-    products = driver.get_all_data_that_contains(ebay, keyword)
+    products = driver.get_all_data_that_contains(keyword)
 
     other_categories = []
     for group in all_groups:
