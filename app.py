@@ -19,8 +19,7 @@ ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
 all_groups = driver.get_all_groups()
-
-(sitemap, other_subpages) = driver.generate_sitemap(all_groups)
+sitemap = driver.generate_sitemap(all_groups)
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -109,22 +108,27 @@ def template_page(category, subcategory, keyword):
         if group.get("_id") == category:
             other_categories = group['subcategories'][:10]
 
-    subpages = {}
-    for subpage in other_subpages:
-        if subpage.get('keyword') == keyword:
-            subpages = subpage
+    if subcategory in other_categories:
+        other_categories.remove(subcategory)
 
-    # print(subpages)
-    valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
+    sub_data = ebay.aggregate([
+        {"$match": {'main_subcategory': subcategory}},
+        {'$group': {'_id': '$main_subcategory',
+                    'keywords': {'$addToSet': '$keyword'},
+                    'images': {'$addToSet': '$image'}
+                    }},
+        {'$limit': 1}
+    ])
 
+    data_of_sub = list(sub_data)[0]
     return render_template(
         'page_template.html',
         category=category,
         subcategory=subcategory,
         other_categories=other_categories,
         keyword=keyword,
+        data_of_sub=data_of_sub,
         products=list(products),
-        other_subpages=valid_subpages[:10],
         clean_url=clean_url,
         eval=eval
     )

@@ -113,10 +113,6 @@ class DBConnection:
 
     def generate_sitemap(self, data: List):
         empty = '{}'
-
-        all_kws = []
-        subpages = []
-
         # Get Today's Date to add as Lastmod
         lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
@@ -151,11 +147,7 @@ class DBConnection:
                     i = i.copy()
                     kw_lnk = f'{sub_link}/{clean_url(kw)}'
                     i['loc'] = kw_lnk
-
-                    all_kws.append(kw)
-                    subpages.append(kw_lnk)
                     each_map.append(i)
-                    # print(i['loc'])
 
         # Add the following
         y = i.copy()
@@ -166,9 +158,4 @@ class DBConnection:
         z['loc'] = f'{empty}/impressum'
         each_map.append(z)
 
-        other_subpages = []
-        for q in all_kws:
-            k = {'keyword': q, 'suggestions': random.sample(subpages, 15)}
-            other_subpages.append(k)
-
-        return each_map, other_subpages
+        return each_map

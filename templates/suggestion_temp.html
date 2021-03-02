@@ -1,0 +1,16 @@
+<div class="content">
+<h2>Other Interesting Subpages From Other Categories Are:</h2>
+<ul>
+   {% for kw in other_subpages %}
+      <li><a href="{{ kw.format(request.host_url) }}">{{ kw.split('/')[-1].replace('-', ' ') }}</a></li>
+  {% endfor %}
+</ul>
+</div>
+<div class="content">
+<h2>Additional Subcategories In {{ category }}:</h2>
+<ul>
+    {% for each in other_categories[:3] %}
+      <li><a href="/{{ clean_url(category) }}/{{ clean_url(each) }}">{{ each.title() }}</a></li>
+    {% endfor %}
+</ul>
+</div>
