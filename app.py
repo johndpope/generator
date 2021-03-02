@@ -6,8 +6,11 @@ from flask import Flask, render_template, make_response, request, redirect, url_
 from flask_pymongo import PyMongo
 
 from controller import MongoDriver
-from controller.config import *
 from helper.clean_url import clean_url
+
+import _thread
+import time
+
 
 app = Flask(__name__)
 
@@ -19,9 +22,18 @@ ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
 all_groups = driver.get_all_groups()
-sitemap = driver.generate_sitemap(all_groups)
+#sitemap = driver.generate_sitemap(all_groups)
+sitemap = [{}]
+_thread.start_new_thread( driver.generate_sitemap, ('Sitemap generator', (sitemap, all_groups)) )
+
+
+
+
 
 pp = pprint.PrettyPrinter(indent=4)
+
+    
+
 
 
 @app.route("/")
@@ -170,6 +182,15 @@ def template_impressum():
 @app.route("/generic")
 def template_generic():
     return render_template('generic.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])
+
+
+def test(self, sitemap):
+    time.sleep(5)
+    sitemap.append(3)
+    print('appended')
+
+
+
 
 
 if __name__ == '__main__':

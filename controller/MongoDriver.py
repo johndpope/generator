@@ -6,8 +6,6 @@ from typing import List
 from pymongo import MongoClient
 
 from helper.clean_url import clean_url
-from .config import *
-
 
 class DBConnection:
 
@@ -20,6 +18,7 @@ class DBConnection:
         self.ebay = self.mongo.db.ebay
 
     def get_all_groups(self):
+        print('Starting get all group')
         """
         Groups the entire data in the database and returns a
         list of all the data grouped into categories
@@ -111,7 +110,9 @@ class DBConnection:
         result = self.ebay.find_one({'url_keyword': url_keyword})
         return result['keyword'] if result else None
 
-    def generate_sitemap(self, data: List):
+    def generate_sitemap(self, sitemap, data: List):
+        print('Starting generate sitemap')
+        print(data)
         empty = '{}'
         # Get Today's Date to add as Lastmod
         lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
@@ -157,5 +158,6 @@ class DBConnection:
         z = i.copy()
         z['loc'] = f'{empty}/impressum'
         each_map.append(z)
-
+        sitemap.extend(each_map)
+        print('Sitemap generated')
         return each_map
