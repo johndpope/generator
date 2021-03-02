@@ -72,7 +72,7 @@ class DBConnection:
         eg. {
             '_id': 'Grills',
             'keywords': ['kombigrill', 'kingstone grillwagen black angus'],
-            'images': ['https://i.ebayimg.com/images/g/x0EAAOSw0VteZPJ0/s-l300.jpg', 'https://i.ebayimg.com/images/g/woQAAOSw-2letTfS/s-l300.jpg'
+            'images': ['https://i.ebayimg.com/images/g/x0EAAOSw0VteZPJ0/s-l300.jpg',...]
             }
         :param ebay:
         :param subcategory:
