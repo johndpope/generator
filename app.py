@@ -20,8 +20,7 @@ ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
 all_groups = driver.get_all_groups()
-# print(all_groups)
-sitemap = driver.generate_sitemap(all_groups)
+(sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -43,7 +42,7 @@ def template_category(category):
     subs = []
     for group in all_groups:
         if group.get("_id") == category:
-            subs = group['subcategories'][:10]
+            subs = group['subcategories']
 
     data = []
     for xx in subs:
@@ -104,33 +103,26 @@ def template_page(category, subcategory, keyword):
         return redirect(url_for('template_index'))
 
     products = driver.get_all_data_that_contains(keyword)
-
     other_categories = []
     for group in all_groups:
         if group.get("_id") == category:
-            other_categories = group['subcategories'][:10]
+            other_categories = [x for x in group['subcategories'][:10] if x != subcategory]
 
-    if subcategory in other_categories:
-        other_categories.remove(subcategory)
+    subpages = {}
+    for subpage in other_subpages:
+        if subpage.get('keyword') == keyword:
+            subpages = subpage
 
-    sub_data = ebay.aggregate([
-        {"$match": {'main_subcategory': subcategory}},
-        {'$group': {'_id': '$main_subcategory',
-                    'keywords': {'$addToSet': '$keyword'},
-                    'images': {'$addToSet': '$image'}
-                    }},
-        {'$limit': 1}
-    ])
+    valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
 
-    data_of_sub = list(sub_data)[0]
     return render_template(
         'page_template.html',
         category=category,
         subcategory=subcategory,
         other_categories=other_categories,
         keyword=keyword,
-        data_of_sub=data_of_sub,
         products=list(products),
+        other_subpages=valid_subpages[:10],
         clean_url=clean_url,
         eval=eval
     )
@@ -170,11 +162,6 @@ def template_impressum():
         'impressum.html',
         domain=request.host
     )
-
-
-@app.route("/generic")
-def template_generic():
-    return render_template('generic.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])
 
 
 if __name__ == '__main__':

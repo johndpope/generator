@@ -1,12 +1,8 @@
 import random
 import time
-from datetime import datetime
 from typing import List
 
-from pymongo import MongoClient
-
 from helper.clean_url import clean_url
-from .config import *
 
 
 class DBConnection:
@@ -72,31 +68,6 @@ class DBConnection:
             if group.get("_id") == category:
                 return group if group else None
 
-    def get_all_kw_of_subcategory(self, subcategory):
-        """
-        Scans through the scraped CSV file and returns a Dict
-        in the form
-        eg. {
-            '_id': 'Grills',
-            'keywords': ['kombigrill', 'kingstone grillwagen black angus'],
-            'images': ['https://i.ebayimg.com/images/g/x0EAAOSw0VteZPJ0/s-l300.jpg',...]
-            }
-        :param ebay:
-        :param subcategory:
-        :return:
-        """
-        data = self.ebay.aggregate([
-            {"$match": {'main_subcategory': subcategory}},
-            {'$group': {'_id': '$main_subcategory',
-                        'keywords': {'$addToSet': '$keyword'},
-                        'images': {'$addToSet': '$image'}
-                        }},
-            {'$limit': 1}
-        ])
-
-        print(list(data))
-        return list(data)[0] if list(data) else None
-
     def get_all_data_that_contains(self, keyword):
         """
         Gets all the data in the database that contains that keyword
@@ -121,10 +92,9 @@ class DBConnection:
 
     def generate_sitemap(self, data: List):
         domain = '{}'
-        # Get Today's Date to add as Lastmod
-        lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
+        all_kws = []
+        subpage_links = []
 
-        # Fill the Sitemap Template and Write File
         each_map = [domain]
         for each in data:  # For each URL in the list of URLs ...
             link = f"{domain}{clean_url(each['_id'])}"
@@ -141,7 +111,11 @@ class DBConnection:
                                 }},
                     {'$limit': 1}
                 ]))[0]
-                each_map.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}/{clean_url(i)}" for i in data['keywords']])
+
+                all_kws.extend([i for i in data['keywords'][:10]])
+                subpage_links.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}/{clean_url(i)}"
+                                      for i in data['keywords'][:10]])
+                each_map.extend(subpage_links)
 
         # Add the following
         y = f'{domain}/datenschutz'
@@ -150,5 +124,9 @@ class DBConnection:
         z = f'{domain}/impressum'
         each_map.append(z)
 
-        # print(each_map)
-        return each_map
+        other_subpages = []
+        for q in all_kws:
+            k = {'keyword': q, 'suggestions': random.sample(subpage_links, 10)}
+            other_subpages.append(k)
+
+        return each_map, other_subpages
