@@ -3,11 +3,10 @@ import pprint
 from datetime import datetime
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, make_response, request, redirect, url_for, current_app
+from flask import Flask, render_template, make_response, request, redirect, url_for
 from flask_pymongo import PyMongo
 
 from controller import MongoDriver
-from controller.config import *
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
@@ -19,15 +18,23 @@ mongo = PyMongo(app)
 ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
-all_groups = driver.get_all_groups()
-(sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
-pp = pprint.PrettyPrinter(indent=4)
+all_groups = []
+sitemap = []
+other_subpages = []
+
+
+@app.before_request
+def run_first():
+    global all_groups
+    all_groups = driver.get_all_groups(request.host_url)
+
+    global sitemap, other_subpages
+    (sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
 
 @app.route("/")
 def template_index():
-    # pp.pprint(all_groups)
     return render_template('index_template.html',
                            clean_url=clean_url,
                            groups=all_groups)

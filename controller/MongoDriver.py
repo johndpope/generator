@@ -14,8 +14,9 @@ class DBConnection:
         """
         self.mongo = mongo
         self.ebay = self.mongo.db.ebay
+        self.groups = self.mongo.db.groups
 
-    def get_all_groups(self):
+    def get_all_groups(self, domain):
         """
         Groups the entire data in the database and returns a
         list of all the data grouped into categories
@@ -31,32 +32,39 @@ class DBConnection:
 
         # start timer
         start_timer = time.perf_counter()
-        grouped_data = self.ebay.aggregate([{'$group': {'_id': "$category",
-                                                        'subcategories': {'$addToSet': '$main_subcategory'},
-                                                        'images': {'$addToSet': '$image'}
-                                                        }}
-                                            ])
 
-        # timestamp1
-        timestamp1 = time.perf_counter()
+        domain_group = self.groups.find_one({'domain': domain})
+        if not domain_group:
+            grouped_data = self.ebay.aggregate([{'$group': {'_id': "$category",
+                                                            'subcategories': {'$addToSet': '$main_subcategory'},
+                                                            'images': {'$addToSet': '$image'}
+                                                            }}
+                                                ])
 
-        filtered_list = list(
-            filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']), grouped_data))
+            # timestamp1
+            timestamp1 = time.perf_counter()
 
-        new_list = []
-        for each in filtered_list:
-            each['subcategories'] = each['subcategories'][:10]
-            each['images'] = each['images'][:10]
-            new_list.append(each)
+            filtered_list = list(
+                filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']), grouped_data))
 
-        randomized = random.sample(new_list, 10)
+            new_list = []
+            for each in filtered_list:
+                each['subcategories'] = each['subcategories'][:10]
+                each['images'] = each['images'][:10]
+                new_list.append(each)
 
-        # timestamp2
-        timestamp2 = time.perf_counter()
+            randomized = random.sample(new_list, 10)
 
-        print(timestamp1 - start_timer)
-        print(timestamp2 - timestamp1)
-        return randomized
+            # timestamp2
+            timestamp2 = time.perf_counter()
+
+            print(timestamp1 - start_timer)
+            print(timestamp2 - timestamp1)
+
+            self.groups.insert_one({'domain': domain, 'groups': randomized})
+            return randomized
+
+        return domain_group['groups']
 
     @classmethod
     def get_group_by_category(cls, groups, category):
