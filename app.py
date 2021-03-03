@@ -24,7 +24,7 @@ sitemap = []
 other_subpages = []
 
 
-@app.before_request
+@app.before_first_request
 def run_first():
     global all_groups
     all_groups = driver.get_all_groups(request.host_url)
