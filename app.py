@@ -1,15 +1,15 @@
 import os
-import pprint
-from datetime import datetime
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, make_response, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from flask_pymongo import PyMongo
+from flask_sitemap import Sitemap
 
 from controller import MongoDriver
 from helper.clean_url import clean_url
 
 app = Flask(__name__)
+ext = Sitemap(app=app)
 
 load_dotenv('.env')
 app.config["MONGO_URI"] = os.environ.get('PROD_DATABASE', "mongodb://127.0.0.1:27017/gen")
@@ -19,18 +19,11 @@ ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
 
-all_groups = []
-sitemap = []
-other_subpages = []
-
 
 @app.before_first_request
 def run_first():
     global all_groups
     all_groups = driver.get_all_groups(request.host_url)
-
-    global sitemap, other_subpages
-    (sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
 
 @app.route("/")
@@ -38,6 +31,11 @@ def template_index():
     return render_template('index_template.html',
                            clean_url=clean_url,
                            groups=all_groups)
+
+
+@ext.register_generator
+def template_index():
+    yield 'template_index', {}
 
 
 @app.route("/<category>")
@@ -116,7 +114,8 @@ def template_page(category, subcategory, keyword):
             other_categories = [x for x in group['subcategories'][:10] if x != subcategory]
 
     subpages = {}
-    for subpage in other_subpages:
+
+    for subpage in []:
         if subpage.get('keyword') == keyword:
             subpages = subpage
 
@@ -141,18 +140,28 @@ def template_page_redirect(category, subcategory, keyword):
     return redirect(url_for('template_page', category=category, subcategory=subcategory, keyword=keyword))
 
 
-@app.route("/sitemap.xml")
+@ext.register_generator
 def template_sitemap():
-    now = datetime.now()
+    for group in all_groups:
+        xx = f"{clean_url(group['_id'])}"
+        yield 'template_category', {'category': xx}
 
-    template = render_template(
-        'sitemap.xml',
-        sitemap=sitemap,
-        datetime=now.strftime("%Y-%m-%dT%H:%M:%S")+"+00:00"
-    )
-    response = make_response(template)
-    response.headers['Content-Type'] = 'application/xml'
-    return response
+        for subcategory in group['subcategories']:
+            yy = f"{clean_url(group['_id'])}/{ clean_url(subcategory) }"
+            yield 'template_category', {'category': yy}
+            sub_data = ebay.aggregate([
+                {"$match": {'main_subcategory': subcategory}},
+                {'$group': {'_id': '$main_subcategory',
+                            'keywords': {'$addToSet': '$keyword'},
+                            'images': {'$addToSet': '$image'}
+                            }},
+                {'$limit': 1}
+            ])
+
+            data = list(sub_data)[0]
+            for i in range(0, len(data['keywords'])):
+                zz = f"{yy}/{clean_url(data['keywords'][i])}"
+                yield 'template_category', {'category': zz}
 
 
 @app.route("/datenschutz")
@@ -163,12 +172,22 @@ def template_datenschutz():
     )
 
 
+@ext.register_generator
+def template_datenschutz():
+    yield 'template_datenschutz', {}
+
+
 @app.route("/impressum")
 def template_impressum():
     return render_template(
         'impressum.html',
         domain=request.host
     )
+
+
+@ext.register_generator
+def template_impressum():
+    yield 'template_impressum', {}
 
 
 if __name__ == '__main__':

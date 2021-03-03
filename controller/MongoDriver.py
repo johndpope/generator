@@ -103,6 +103,7 @@ class DBConnection:
         all_kws = []
         subpage_links = []
 
+        start_timer = time.perf_counter()
         each_map = [domain]
         for each in data:  # For each URL in the list of URLs ...
             link = f"{domain}{clean_url(each['_id'])}"
@@ -125,11 +126,14 @@ class DBConnection:
                                       for i in data['keywords'][:10]])
                 each_map.extend(subpage_links)
 
+                timestamp1 = time.perf_counter()
+                print(timestamp1 - start_timer)
+
         # Add the following
-        y = f'{domain}/datenschutz'
+        y = f'{domain}datenschutz'
         each_map.append(y)
 
-        z = f'{domain}/impressum'
+        z = f'{domain}impressum'
         each_map.append(z)
 
         other_subpages = []
@@ -137,4 +141,5 @@ class DBConnection:
             k = {'keyword': q, 'suggestions': random.sample(subpage_links, 10)}
             other_subpages.append(k)
 
+        print(each_map)
         return each_map, other_subpages
