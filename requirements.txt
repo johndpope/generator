@@ -4,3 +4,4 @@ dnspython
 pymongo
 flask-pymongo
 python-dotenv
+flask-sitemap

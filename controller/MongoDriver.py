@@ -99,47 +99,40 @@ class DBConnection:
         return result['keyword'] if result else None
 
     def generate_sitemap(self, data: List):
-        domain = '{}'
-        all_kws = []
+        sitemap = []
+        all_kw = []
         subpage_links = []
 
-        start_timer = time.perf_counter()
-        each_map = [domain]
-        for each in data:  # For each URL in the list of URLs ...
-            link = f"{domain}{clean_url(each['_id'])}"
-            each_map.append(link)
+        for group in data:
+            xx = f"{clean_url(group['_id'])}"
+            sitemap.append(xx)
 
-            each_map.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}" for sub in each['subcategories']])
+            for subcategory in group['subcategories']:
+                yy = f"{clean_url(group['_id'])}/{clean_url(subcategory)}"
+                sitemap.append(yy)
 
-            for sub in each['subcategories']:
-                data = list(self.ebay.aggregate([
-                    {"$match": {'main_subcategory': sub}},
+                sub_data = self.ebay.aggregate([
+                    {"$match": {'main_subcategory': subcategory}},
                     {'$group': {'_id': '$main_subcategory',
                                 'keywords': {'$addToSet': '$keyword'},
                                 'images': {'$addToSet': '$image'}
                                 }},
                     {'$limit': 1}
-                ]))[0]
+                ])
 
-                all_kws.extend([i for i in data['keywords'][:10]])
-                subpage_links.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}/{clean_url(i)}"
-                                      for i in data['keywords'][:10]])
-                each_map.extend(subpage_links)
+                data = list(sub_data)[0]
+                for i in range(0, len(data['keywords'][:10])):
+                    zz = f"{yy}/{clean_url(data['keywords'][i])}"
 
-                timestamp1 = time.perf_counter()
-                print(timestamp1 - start_timer)
-
-        # Add the following
-        y = f'{domain}datenschutz'
-        each_map.append(y)
-
-        z = f'{domain}impressum'
-        each_map.append(z)
+                    sitemap.append(zz)
+                    all_kw.append(data['keywords'][i])
+                    subpage_links.append(zz)
 
         other_subpages = []
-        for q in all_kws:
+        for q in all_kw:
             k = {'keyword': q, 'suggestions': random.sample(subpage_links, 10)}
             other_subpages.append(k)
 
-        print(each_map)
-        return each_map, other_subpages
+        return sitemap, other_subpages
+
+

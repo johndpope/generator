@@ -167,7 +167,7 @@
             <h2>Other Interesting Subpages From Other Categories Are:</h2>
             <ul>
                {% for kw in other_subpages %}
-                  <li><a href="{{ kw.format(request.host_url) }}">{{ kw.split('/')[-1].replace('-', ' ') }}</a></li>
+                  <li><a href="/{{ kw }}">{{ kw.split('/')[-1].replace('-', ' ') }}</a></li>
               {% endfor %}
             </ul>
           </div>

@@ -20,10 +20,18 @@ ebay = mongo.db.ebay
 driver = MongoDriver.DBConnection(mongo)
 
 
+all_groups = []
+sitemap = []
+other_subpages = []
+
+
 @app.before_first_request
 def run_first():
     global all_groups
     all_groups = driver.get_all_groups(request.host_url)
+
+    global sitemap, other_subpages
+    (sitemap, other_subpages) = driver.generate_sitemap(all_groups)
 
 
 @app.route("/")
@@ -115,7 +123,7 @@ def template_page(category, subcategory, keyword):
 
     subpages = {}
 
-    for subpage in []:
+    for subpage in other_subpages:
         if subpage.get('keyword') == keyword:
             subpages = subpage
 
@@ -142,26 +150,8 @@ def template_page_redirect(category, subcategory, keyword):
 
 @ext.register_generator
 def template_sitemap():
-    for group in all_groups:
-        xx = f"{clean_url(group['_id'])}"
-        yield 'template_category', {'category': xx}
-
-        for subcategory in group['subcategories']:
-            yy = f"{clean_url(group['_id'])}/{ clean_url(subcategory) }"
-            yield 'template_category', {'category': yy}
-            sub_data = ebay.aggregate([
-                {"$match": {'main_subcategory': subcategory}},
-                {'$group': {'_id': '$main_subcategory',
-                            'keywords': {'$addToSet': '$keyword'},
-                            'images': {'$addToSet': '$image'}
-                            }},
-                {'$limit': 1}
-            ])
-
-            data = list(sub_data)[0]
-            for i in range(0, len(data['keywords'])):
-                zz = f"{yy}/{clean_url(data['keywords'][i])}"
-                yield 'template_category', {'category': zz}
+    for url in sitemap:
+        yield 'template_category', {'category': url}
 
 
 @app.route("/datenschutz")
