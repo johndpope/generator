@@ -1,5 +1,6 @@
 import os
 import pprint
+from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, make_response, request, redirect, url_for, current_app
@@ -19,6 +20,7 @@ ebay = mongo.db.ebay
 
 driver = MongoDriver.DBConnection(mongo)
 all_groups = driver.get_all_groups()
+# print(all_groups)
 sitemap = driver.generate_sitemap(all_groups)
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -142,9 +144,12 @@ def template_page_redirect(category, subcategory, keyword):
 
 @app.route("/sitemap.xml")
 def template_sitemap():
+    now = datetime.now()
+
     template = render_template(
         'sitemap.xml',
-        all_urls=sitemap
+        sitemap=sitemap,
+        datetime=now.strftime("%Y-%m-%dT%H:%M:%S")+"+00:00"
     )
     response = make_response(template)
     response.headers['Content-Type'] = 'application/xml'

@@ -2,12 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-    {% for i in all_urls %}
+    {% for i in sitemap %}
     <url>
-      <loc>{{ i['loc'].format(request.host_url) }}</loc>
-      <lastmod>{{ i['lastmod'] }}</lastmod>
-      <changefreq>{{ i['changefreq'] }}</changefreq>
-      <priority>{{ i['priority'] }}</priority>
+      <loc>{{ i.format(request.host_url) }}</loc>
+      <lastmod>{{ datetime }}</lastmod>
+      <changefreq>daily</changefreq>
+      <priority>1.0</priority>
     </url>
     {% endfor %}
 </urlset>

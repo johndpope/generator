@@ -46,7 +46,14 @@ class DBConnection:
 
         filtered_list = list(
             filter(lambda x: (len(x['subcategories']) > 5 and '' not in x['subcategories']), grouped_data))
-        randomized = random.sample(filtered_list, 10)
+
+        new_list = []
+        for each in filtered_list:
+            each['subcategories'] = each['subcategories'][:10]
+            each['images'] = each['images'][:10]
+            new_list.append(each)
+
+        randomized = random.sample(new_list, 10)
 
         # timestamp2
         timestamp2 = time.perf_counter()
@@ -87,6 +94,7 @@ class DBConnection:
             {'$limit': 1}
         ])
 
+        print(list(data))
         return list(data)[0] if list(data) else None
 
     def get_all_data_that_contains(self, keyword):
@@ -112,50 +120,35 @@ class DBConnection:
         return result['keyword'] if result else None
 
     def generate_sitemap(self, data: List):
-        empty = '{}'
+        domain = '{}'
         # Get Today's Date to add as Lastmod
         lastmod_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
 
         # Fill the Sitemap Template and Write File
-        i = {'lastmod': lastmod_date, 'changefreq': 'daily', 'priority': '1.0', 'loc': empty}
-        each_map = [i]
+        each_map = [domain]
         for each in data:  # For each URL in the list of URLs ...
-            i = i.copy()
-            link = f"{empty}{clean_url(each['_id'])}"
-            i['loc'] = link
-            each_map.append(i)
-            # print(i['loc'])
+            link = f"{domain}{clean_url(each['_id'])}"
+            each_map.append(link)
 
-            for lnk in each['subcategories']:
-                i = i.copy()
-                sub_link = f'{link}/{clean_url(lnk)}'
-                i['loc'] = sub_link
-                each_map.append(i)
-                # print(i['loc'])
+            each_map.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}" for sub in each['subcategories']])
 
-                kw_data = list(
-                    self.ebay.aggregate([
-                        {"$match": {'main_subcategory': lnk}},
-                        {'$group': {'_id': '$main_subcategory',
-                                    'keywords': {'$addToSet': '$keyword'},
-                                    'images': {'$addToSet': '$image'}
-                                    }},
-                        {'$limit': 1}
-                    ])
-                )[0]
-                for kw in kw_data['keywords'][:10]:
-                    i = i.copy()
-                    kw_lnk = f'{sub_link}/{clean_url(kw)}'
-                    i['loc'] = kw_lnk
-                    each_map.append(i)
+            for sub in each['subcategories']:
+                data = list(self.ebay.aggregate([
+                    {"$match": {'main_subcategory': sub}},
+                    {'$group': {'_id': '$main_subcategory',
+                                'keywords': {'$addToSet': '$keyword'},
+                                'images': {'$addToSet': '$image'}
+                                }},
+                    {'$limit': 1}
+                ]))[0]
+                each_map.extend([f"{domain}{clean_url(each['_id'])}/{clean_url(sub)}/{clean_url(i)}" for i in data['keywords']])
 
         # Add the following
-        y = i.copy()
-        y['loc'] = f'{empty}/datenschutz'
+        y = f'{domain}/datenschutz'
         each_map.append(y)
 
-        z = i.copy()
-        z['loc'] = f'{empty}/impressum'
+        z = f'{domain}/impressum'
         each_map.append(z)
 
+        # print(each_map)
         return each_map
