@@ -5,9 +5,9 @@ COPY nginx-gen.conf /etc/nginx/conf.d/
 
 # URL under which static (not modified by Python) files will be requested
 # They will be served by Nginx directly, without being handled by uWSGI
-# ENV STATIC_URL /static
+ENV STATIC_URL /static
 # Absolute path in where the static files wil be
-# ENV STATIC_PATH /app/static
+ENV STATIC_PATH /app/static
 
 # The starting number of uWSGI processes is controlled by the variable UWSGI_CHEAPER, by default set to 2
 # The maximum number of uWSGI processes is controlled by the variable UWSGI_PROCESSES, by default set to 16
