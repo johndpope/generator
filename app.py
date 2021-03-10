@@ -12,6 +12,8 @@ app = Flask(__name__)
 ext = Sitemap(app=app)
 
 load_dotenv('.env')
+app.config["SITEMAP_URL_SCHEME"] = "https"
+app.config["SITEMAP_BLUEPRINT_URL_PREFIX"] = ''
 app.config["MONGO_URI"] = os.environ.get('PROD_DATABASE', "mongodb://127.0.0.1:27017/gen")
 
 mongo = PyMongo(app)
@@ -46,7 +48,7 @@ def template_index():
     yield 'template_index', {}
 
 
-@app.route("/<category>/")
+@app.route("/<category>")
 def template_category(category):
     category = driver.get_category_by_url(category)
     if not category:

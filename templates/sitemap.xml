@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     {% for i in sitemap %}
     <url>
-      <loc>{{ i.format(request.host_url) }}</loc>
+      <loc>{{ i.format(request.url_root ) }}</loc>
       <lastmod>{{ datetime }}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
