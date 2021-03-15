@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
@@ -30,7 +31,8 @@ other_subpages = []
 @app.before_first_request
 def run_first():
     global all_groups
-    all_groups = driver.get_all_groups(request.host_url)
+    url = urlparse(request.host_url).netloc.replace('www.', '')
+    all_groups = driver.get_all_groups(url)
 
     global sitemap, other_subpages
     (sitemap, other_subpages) = driver.generate_sitemap(all_groups)
@@ -108,7 +110,7 @@ def template_sub(category, subcategory):
     )
 
 
-@app.route("/<category>/<subcategory>/<keyword>")
+@app.route("/<category>/<subcategory>/<keyword>/")
 def template_page(category, subcategory, keyword):
     subcategory = driver.get_subcategory_by_url(subcategory)
     category = driver.get_category_by_url(category)
@@ -142,12 +144,6 @@ def template_page(category, subcategory, keyword):
         clean_url=clean_url,
         eval=eval
     )
-
-
-@app.route("/<category>/<subcategory>/<keyword>/")
-def template_page_redirect(category, subcategory, keyword):
-    keyword = keyword.replace('/', '')
-    return redirect(url_for('template_page', category=category, subcategory=subcategory, keyword=keyword))
 
 
 @ext.register_generator
