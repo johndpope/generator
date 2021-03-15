@@ -79,7 +79,7 @@ def template_category(category):
                            )
 
 
-@app.route("/<category>/<subcategory>/")
+@app.route("/<category>/<subcategory>")
 def template_sub(category, subcategory):
     group = driver.get_group_by_category(all_groups, category)
     subcategory = driver.get_subcategory_by_url(subcategory)
@@ -108,7 +108,7 @@ def template_sub(category, subcategory):
     )
 
 
-@app.route("/<category>/<subcategory>/<keyword>/")
+@app.route("/<category>/<subcategory>/<keyword>")
 def template_page(category, subcategory, keyword):
     subcategory = driver.get_subcategory_by_url(subcategory)
     category = driver.get_category_by_url(category)
@@ -142,6 +142,12 @@ def template_page(category, subcategory, keyword):
         clean_url=clean_url,
         eval=eval
     )
+
+
+@app.route("/<category>/<subcategory>/<keyword>/")
+def template_page_redirect(category, subcategory, keyword):
+    keyword = keyword.replace('/', '')
+    return redirect(url_for('template_page', category=category, subcategory=subcategory, keyword=keyword))
 
 
 @ext.register_generator
