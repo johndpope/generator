@@ -25,7 +25,7 @@ driver = MongoDriver.DBConnection(mongo)
 
 all_groups = []
 sitemap = []
-other_subpages = []
+# other_subpages = []
 
 
 @app.before_first_request
@@ -131,7 +131,7 @@ def template_page(category, subcategory, keyword):
         if subpage.get('keyword') == keyword:
             subpages = subpage
 
-    valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
+   #  valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
 
     return render_template(
         'page_template.html',
