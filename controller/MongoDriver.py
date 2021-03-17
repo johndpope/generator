@@ -100,8 +100,6 @@ class DBConnection:
 
     def generate_sitemap(self, data: List):
         sitemap = []
-        all_kw = []
-        subpage_links = []
 
         for group in data:
             xx = f"{clean_url(group['_id'])}"
@@ -125,14 +123,7 @@ class DBConnection:
                     zz = f"{yy}/{clean_url(data['keywords'][i])}"
 
                     sitemap.append(zz)
-                    all_kw.append(data['keywords'][i])
-                    subpage_links.append(zz)
 
-        other_subpages = []
-        for q in all_kw:
-            k = {'keyword': q, 'suggestions': random.sample(subpage_links, 10)}
-            other_subpages.append(k)
-
-        return sitemap, other_subpages
+        return sitemap
 
 

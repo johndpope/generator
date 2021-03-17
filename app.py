@@ -1,4 +1,5 @@
 import os
+import random
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
@@ -25,7 +26,8 @@ driver = MongoDriver.DBConnection(mongo)
 
 all_groups = []
 sitemap = []
-# other_subpages = []
+sublinks = []
+data = {}
 
 
 @app.before_first_request
@@ -34,8 +36,13 @@ def run_first():
     url = urlparse(request.host_url).netloc.replace('www.', '')
     all_groups = driver.get_all_groups(url)
 
-    global sitemap, other_subpages
-    (sitemap, other_subpages) = driver.generate_sitemap(all_groups)
+    global sitemap
+    sitemap = driver.generate_sitemap(all_groups)
+
+    global data, sublinks
+    for each in sitemap:
+        if len(each.split('/')) == 3:
+            sublinks.append(each)
 
 
 @app.route("/")
@@ -125,13 +132,12 @@ def template_page(category, subcategory, keyword):
         if group.get("_id") == category:
             other_categories = [x for x in group['subcategories'][:10] if x != subcategory]
 
-    subpages = {}
+    if keyword not in data:
+        links = [x for x in sublinks if clean_url(category) not in x]
+        valid_subpages = random.sample(links, 10)
+        data[keyword] = valid_subpages
 
-    for subpage in other_subpages:
-        if subpage.get('keyword') == keyword:
-            subpages = subpage
-
-   #  valid_subpages = [x for x in subpages['suggestions'] if clean_url(category) not in x]
+    valid_subpages = data[keyword]
 
     return render_template(
         'page_template.html',
@@ -140,7 +146,7 @@ def template_page(category, subcategory, keyword):
         other_categories=other_categories,
         keyword=keyword,
         products=list(products),
-        other_subpages=valid_subpages[:10],
+        other_subpages=valid_subpages,
         clean_url=clean_url,
         eval=eval
     )
