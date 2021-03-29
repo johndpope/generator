@@ -57,7 +57,7 @@ def template_index():
     yield 'template_index', {}
 
 
-@app.route("/<category>")
+@app.route("/<category>/")
 def template_category(category):
     category = driver.get_category_by_url(category)
     if not category:
@@ -88,7 +88,7 @@ def template_category(category):
                            )
 
 
-@app.route("/<category>/<subcategory>")
+@app.route("/<category>/<subcategory>/")
 def template_sub(category, subcategory):
     group = driver.get_group_by_category(all_groups, category)
     subcategory = driver.get_subcategory_by_url(subcategory)
