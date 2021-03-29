@@ -25,6 +25,7 @@ driver = MongoDriver.DBConnection(mongo)
 
 
 all_groups = []
+all_categories = []
 sitemap = []
 sublinks = []
 data = {}
@@ -32,9 +33,10 @@ data = {}
 
 @app.before_first_request
 def run_first():
-    global all_groups
-    url = urlparse(request.host_url).netloc.replace('www.', '')
-    all_groups = driver.get_all_groups(url)
+    global all_groups, all_categories
+    domain = urlparse(request.host_url).netloc.replace('www.', '')
+    all_groups = driver.get_all_groups(domain)
+    all_categories = [x['_id'] for x in all_groups]
 
     global sitemap
     sitemap = driver.generate_sitemap(all_groups)
@@ -60,7 +62,7 @@ def template_index():
 @app.route("/<category>/")
 def template_category(category):
     category = driver.get_category_by_url(category)
-    if not category:
+    if category not in all_categories:
         return redirect(url_for('template_index'))
 
     subs = []
