@@ -75,7 +75,7 @@ def template_category(category):
         sub_data = amazon.aggregate([
             {"$match": {'main_subcategory': xx}},
             {'$group': {'_id': '$main_subcategory',
-                        'keywords': {'$addToSet': '$keyword'},
+                        'keywords': {'$addToSet': '$search_keyword'},
                         'images': {'$addToSet': '$image'}
                         }},
             {'$limit': 1}
@@ -102,7 +102,7 @@ def template_sub(category, subcategory):
     sub_data = amazon.aggregate([
             {"$match": {'main_subcategory': subcategory}},
             {'$group': {'_id': '$main_subcategory',
-                        'keywords': {'$addToSet': '$keyword'},
+                        'keywords': {'$addToSet': '$search_keyword'},
                         'images': {'$addToSet': '$image'}
                         }},
             {'$limit': 1}

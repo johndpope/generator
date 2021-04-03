@@ -86,12 +86,12 @@ class DBConnection:
         :param keyword:
         :return: [List]
         """
-        data = self.testamazon.find({'keyword': keyword})
+        data = self.testamazon.find({'search_keyword': keyword})
         return data
 
     def get_category_by_url(self, url_category):
         result = self.testamazon.find_one({'url_category': url_category})
-        return result['category'] if result else None
+        return result['category_text'] if result else None
 
     def get_subcategory_by_url(self, url_subcategory):
         result = self.testamazon.find_one({'url_mainsubcategory': url_subcategory})
@@ -99,7 +99,7 @@ class DBConnection:
 
     def get_keyword_by_url(self, url_keyword):
         result = self.testamazon.find_one({'url_keyword': url_keyword})
-        return result['keyword'] if result else None
+        return result['search_keyword'] if result else None
 
     def generate_sitemap(self, data: List):
         sitemap = []
@@ -115,7 +115,7 @@ class DBConnection:
                 sub_data = self.testamazon.aggregate([
                     {"$match": {'main_subcategory': subcategory}},
                     {'$group': {'_id': '$main_subcategory',
-                                'keywords': {'$addToSet': '$keyword'},
+                                'keywords': {'$addToSet': '$search_keyword'},
                                 'images': {'$addToSet': '$image'}
                                 }},
                     {'$limit': 1}
