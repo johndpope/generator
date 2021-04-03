@@ -97,10 +97,7 @@
                   <p>{{ product.keyword }}</p>
                   <h2>{{ product.name }}</h2>
                 </header>
-                <ul>
-                  {% for k, v in eval(product.description).items() %}
-                    <li>{{k}}: {{v}}</li>
-                  {% endfor %}
+                {{ product.description }}
                 </ul>
               </div>
             </div>

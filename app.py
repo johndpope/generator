@@ -147,10 +147,9 @@ def template_page(category, subcategory, keyword):
         subcategory=subcategory,
         other_categories=other_categories,
         keyword=keyword,
-        products=list(products),
+        products=list(products)[:10],
         other_subpages=valid_subpages,
-        clean_url=clean_url,
-        eval=eval
+        clean_url=clean_url
     )
 
 
