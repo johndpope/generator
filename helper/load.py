@@ -72,7 +72,7 @@ def load_all_data_from_amazon(amazon):
         if len(each["breadcrumb-categories"]) == 0:
             continue
 
-        if not each["category_text"]:
+        if 'category_text' not in each:
             each["category_text"] = each['breadcrumb-categories'][0]
 
         data = {
