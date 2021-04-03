@@ -68,8 +68,12 @@ def load_all_data_from_amazon(amazon):
 
     new_data = []
     for each in all_data:
+
         if len(each["breadcrumb-categories"]) == 0:
             continue
+
+        if not each["category_text"]:
+            each["category_text"] = each['breadcrumb-categories'][0]
 
         data = {
             "price": each['price'],
@@ -80,7 +84,6 @@ def load_all_data_from_amazon(amazon):
             "title": each['title'],
             "image": each['image'],
             "description": each['description'],
-            "category_id": each['category_id'],
             "category_text": each['category_text'],
             "breadcrumb-categories": each['breadcrumb-categories'],
             "reviews": each['reviews'],
@@ -92,7 +95,7 @@ def load_all_data_from_amazon(amazon):
         if data['category_text'] in data['breadcrumb-categories']:
             data['breadcrumb-categories'].remove(data['category_text'])
 
-        data["main_subcategory"] = data["breadcrumb-categories"][0]
+        data["main_subcategory"] = data["breadcrumb-categories"][0] or 'others'
 
         data["url_keyword"] = clean_url(data["search_keyword"])
         data["url_category"] = clean_url(data["category_text"])
