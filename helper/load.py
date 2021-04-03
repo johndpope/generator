@@ -52,8 +52,7 @@ def load_all_data_from_csv():
                 data['subcategories'].remove('Sonstige')
 
             if len(data['subcategories']):
-                data["main_subcategory"] = data['subcategories'][-2] \
-                    if len(data['subcategories']) > 1 else data['subcategories'][0]
+                data["main_subcategory"] = data['subcategories'][-2] if len(data['subcategories']) > 1 else data['subcategories'][0]
 
             data["url_keyword"] = clean_url(data["keyword"])
             data["url_category"] = clean_url(data["category"])
@@ -66,5 +65,40 @@ def load_all_data_from_csv():
 
 def load_all_data_from_amazon(amazon):
     all_data = list(amazon.find())
-    return all_data
+
+    new_data = []
+    for each in all_data:
+        if len(each["breadcrumb-categories"]) == 0:
+            continue
+
+        data = {
+            "price": each['price'],
+            "rating": each['rating'],
+            "numberofreviews": each['numberofreviews'],
+            "sizes": each['sizes'],
+            "colors": each['colors'],
+            "title": each['title'],
+            "image": each['image'],
+            "description": each['description'],
+            "category_id": each['category_id'],
+            "category_text": each['category_text'],
+            "breadcrumb-categories": each['breadcrumb-categories'],
+            "reviews": each['reviews'],
+            "search_keyword": each['search_keyword'],
+            "url": each['url'],
+            "asin": each['asin']
+        }
+
+        if data['category_text'] in data['breadcrumb-categories']:
+            data['breadcrumb-categories'].remove(data['category_text'])
+
+        data["main_subcategory"] = data["breadcrumb-categories"][0]
+
+        data["url_keyword"] = clean_url(data["search_keyword"])
+        data["url_category"] = clean_url(data["category_text"])
+        data["url_mainsubcategory"] = clean_url(data["main_subcategory"])
+
+        new_data.append(data)
+
+    return new_data
 

@@ -19,7 +19,7 @@ app.config["SITEMAP_BLUEPRINT_URL_PREFIX"] = ''
 app.config["MONGO_URI"] = os.environ.get('PROD_DATABASE', "mongodb://127.0.0.1:27017/gen")
 
 mongo = PyMongo(app)
-ebay = mongo.db.ebay
+amazon = mongo.db.testamazon
 
 driver = MongoDriver.DBConnection(mongo)
 
@@ -72,7 +72,7 @@ def template_category(category):
 
     data = []
     for xx in subs:
-        sub_data = ebay.aggregate([
+        sub_data = amazon.aggregate([
             {"$match": {'main_subcategory': xx}},
             {'$group': {'_id': '$main_subcategory',
                         'keywords': {'$addToSet': '$keyword'},
@@ -99,7 +99,7 @@ def template_sub(category, subcategory):
         return redirect(url_for('template_index'))
 
     category = driver.get_category_by_url(category)
-    sub_data = ebay.aggregate([
+    sub_data = amazon.aggregate([
             {"$match": {'main_subcategory': subcategory}},
             {'$group': {'_id': '$main_subcategory',
                         'keywords': {'$addToSet': '$keyword'},

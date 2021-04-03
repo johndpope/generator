@@ -15,6 +15,7 @@ class DBConnection:
 
         self.mongo = mongo
         self.amazon = self.mongo.db.amazon
+        self.testamazon = self.mongo.db.testamazon
         self.ebay = self.mongo.db.ebay
         self.groups = self.mongo.db.groups
 
@@ -37,11 +38,11 @@ class DBConnection:
 
         domain_group = self.groups.find_one({'domain': domain})
         if not domain_group:
-            grouped_data = self.ebay.aggregate([{'$group': {'_id': "$category",
-                                                            'subcategories': {'$addToSet': '$main_subcategory'},
-                                                            'images': {'$addToSet': '$image'}
-                                                            }}
-                                                ])
+            grouped_data = self.testamazon.aggregate([{'$group': {'_id': "$category_text",
+                                                                  'subcategories': {'$addToSet': '$main_subcategory'},
+                                                                  'images': {'$addToSet': '$image'}
+                                                                  }}
+                                                      ])
 
             # timestamp1
             timestamp1 = time.perf_counter()
@@ -85,19 +86,19 @@ class DBConnection:
         :param keyword:
         :return: [List]
         """
-        data = self.ebay.find({'keyword': keyword})
+        data = self.testamazon.find({'keyword': keyword})
         return data
 
     def get_category_by_url(self, url_category):
-        result = self.ebay.find_one({'url_category': url_category})
+        result = self.testamazon.find_one({'url_category': url_category})
         return result['category'] if result else None
 
     def get_subcategory_by_url(self, url_subcategory):
-        result = self.ebay.find_one({'url_mainsubcategory': url_subcategory})
+        result = self.testamazon.find_one({'url_mainsubcategory': url_subcategory})
         return result['main_subcategory'] if result else None
 
     def get_keyword_by_url(self, url_keyword):
-        result = self.ebay.find_one({'url_keyword': url_keyword})
+        result = self.testamazon.find_one({'url_keyword': url_keyword})
         return result['keyword'] if result else None
 
     def generate_sitemap(self, data: List):
@@ -111,7 +112,7 @@ class DBConnection:
                 yy = f"{clean_url(group['_id'])}/{clean_url(subcategory)}"
                 sitemap.append(yy)
 
-                sub_data = self.ebay.aggregate([
+                sub_data = self.testamazon.aggregate([
                     {"$match": {'main_subcategory': subcategory}},
                     {'$group': {'_id': '$main_subcategory',
                                 'keywords': {'$addToSet': '$keyword'},
@@ -127,5 +128,3 @@ class DBConnection:
                     sitemap.append(zz)
 
         return sitemap
-
-
