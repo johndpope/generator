@@ -12,7 +12,9 @@ class DBConnection:
         Sets up a connection to the MongoDB instance.
         Credentials are set up in config.py
         """
+
         self.mongo = mongo
+        self.amazon = self.mongo.db.amazon
         self.ebay = self.mongo.db.ebay
         self.groups = self.mongo.db.groups
 

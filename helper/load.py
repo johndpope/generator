@@ -62,3 +62,9 @@ def load_all_data_from_csv():
             all_data.append(data)
 
     return all_data
+
+
+def load_all_data_from_amazon(amazon):
+    all_data = list(amazon.find())
+    return all_data
+
